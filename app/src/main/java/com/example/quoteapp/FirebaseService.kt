@@ -1,12 +1,12 @@
 package com.example.quoteapp
 
 import android.util.Log
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class FirebaseService{
     val db = Firebase.firestore
-
 
     private var counter = 0
     // Sends the quotes to LogCat
@@ -22,7 +22,7 @@ class FirebaseService{
         }
 
     fun quotesToList(
-        quotesList: MutableList<Quote>,
+        quotesList: SnapshotStateList<Quote>,
         onComplete: (List<Quote>) -> Unit,
         onFailure: (Exception) -> Unit)
     {

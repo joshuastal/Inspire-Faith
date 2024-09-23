@@ -1,9 +1,10 @@
 package com.example.quoteapp
 
 import android.util.Log
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
 class QuoteService {
-     fun retrieveQuotes(quotesList: MutableList<Quote>): MutableList<Quote> {
+     fun retrieveQuotes(quotesList: SnapshotStateList<Quote>): SnapshotStateList<Quote> {
 
          val firebaseService = FirebaseService()
          var counter = 0
