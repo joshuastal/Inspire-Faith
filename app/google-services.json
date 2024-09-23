@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "69152779419",
+    "firebase_url": "https://test-6aa80-default-rtdb.firebaseio.com",
+    "project_id": "test-6aa80",
+    "storage_bucket": "test-6aa80.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:69152779419:android:c3d4242627bc21c2c3aa3e",
+        "android_client_info": {
+          "package_name": "com.example.quoteapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdEQfn8yp1CfaBRQ6QqTSQ9rz3fvpH_hM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
