@@ -6,13 +6,24 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,36 +45,58 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+
+
         // Initialize the services and the quotes list
         //quotes = mutableListOf()
-        quotes = SnapshotStateList<Quote>()
+        quotes = mutableStateListOf<Quote>()
         firebaseService = FirebaseService()
         quoteService = QuoteService()
 
         quoteService.retrieveQuotes(quotes)
-
+        var logCounter = 0
 
         setContent {
-            Greeting(quotes, Modifier
-                .padding(top = 20.dp)
-                .verticalScroll(rememberScrollState())
-            )
+            logCounter += 1
+            MainScreen(quotes)
+            Log.d(TAG, "This is called from inside setContent: ${quotes.size} call # $logCounter")
+
         }
-        Log.d(TAG, "Quotes displayed: ${quotes.size}")
+
 
     }
 }
 
 @Composable
-fun Greeting(quotes: MutableList<Quote>, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        quotes.forEach { quote ->
+fun MainScreen(quotes: MutableList<Quote>, modifier: Modifier = Modifier) {
+    var isDarkTheme by remember { mutableStateOf(false) }
+
+    MaterialTheme(
+        colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme()
+    ) {
+        Box(modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+        ) {
+            Column {
+                Button(onClick = { isDarkTheme = !isDarkTheme }) {
+                    Text(text = if (isDarkTheme) "Switch to Light Mode" else "Switch to Dark Mode")
+                }
+                DisplayQuotes(quotes = quotes)
+            }
+        }
+    }
+}
+
+@Composable
+fun DisplayQuotes(quotes: MutableList<Quote>, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+        quotes.forEach { quote -> // For each quote in quotes (quote is the object the for loop is looking at)
             Text(
                 text = "Quote: ${quote.quote}\nAuthor: ${quote.author}",
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(8.dp) // Add padding for better readability
             )
         }
     }
 }
-
-
