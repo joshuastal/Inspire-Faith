@@ -1,6 +1,7 @@
 package com.example.quoteapp
 
 import android.content.ContentValues.TAG
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.quoteapp.ui.theme.QuoteAppTheme
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -43,8 +45,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
+        //enableEdgeToEdge()
 
 
         // Initialize the services and the quotes list
@@ -57,36 +58,31 @@ class MainActivity : ComponentActivity() {
         var logCounter = 0
 
         setContent {
-            logCounter += 1
-            MainScreen(quotes)
-            Log.d(TAG, "This is called from inside setContent: ${quotes.size} call # $logCounter")
-
+            QuoteAppTheme {
+                logCounter += 1
+                MainScreen(quotes)
+                Log.d(TAG, "This is called from inside setContent: ${quotes.size} call # $logCounter")
+            }
         }
-
-
     }
+
+
+
 }
 
 @Composable
 fun MainScreen(quotes: MutableList<Quote>, modifier: Modifier = Modifier) {
-    var isDarkTheme by remember { mutableStateOf(false) }
 
     MaterialTheme(
-        colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme()
     ) {
         Box(modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
         ) {
-            Column {
-                Button(onClick = { isDarkTheme = !isDarkTheme }) {
-                    Text(text = if (isDarkTheme) "Switch to Light Mode" else "Switch to Dark Mode")
-                }
                 DisplayQuotes(quotes = quotes)
             }
         }
     }
-}
 
 @Composable
 fun DisplayQuotes(quotes: MutableList<Quote>, modifier: Modifier = Modifier) {

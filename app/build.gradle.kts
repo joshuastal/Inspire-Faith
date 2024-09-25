@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.quoteapp"
-        minSdk = 24
+        minSdk = 28 // default 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
