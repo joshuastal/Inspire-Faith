@@ -1,13 +1,18 @@
 package com.example.quoteapp
 
+import android.animation.ObjectAnimator
 import android.content.ContentValues.TAG
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.animation.OvershootInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,9 +33,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.animation.doOnEnd
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.quoteapp.ui.theme.QuoteAppTheme
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.delay
 
 
 //private lateinit var quotes: MutableList<Quote>
@@ -48,13 +56,20 @@ class MainActivity : ComponentActivity() {
         //enableEdgeToEdge()
 
 
+        // Incorporate the splash screen and ensure it stays on screen until quotes are loaded
+        var isQuotesLoaded by mutableStateOf(false)
+        installSplashScreen().apply { setKeepOnScreenCondition { !isQuotesLoaded} }
+
+
         // Initialize the services and the quotes list
         //quotes = mutableListOf()
         quotes = mutableStateListOf<Quote>()
         firebaseService = FirebaseService()
         quoteService = QuoteService()
 
-        quoteService.retrieveQuotes(quotes)
+        quoteService.retrieveQuotes(quotes, firebaseService) {
+            isQuotesLoaded = true
+        }
         var logCounter = 0
 
         setContent {
