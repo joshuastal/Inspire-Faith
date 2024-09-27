@@ -53,20 +53,20 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
 
 
         // Incorporate the splash screen and ensure it stays on screen until quotes are loaded
         var isQuotesLoaded by mutableStateOf(false)
         installSplashScreen().apply { setKeepOnScreenCondition { !isQuotesLoaded} }
+        enableEdgeToEdge()
 
 
         // Initialize the services and the quotes list
-        //quotes = mutableListOf()
         quotes = mutableStateListOf<Quote>()
         firebaseService = FirebaseService()
         quoteService = QuoteService()
 
+        // This is the step that actually makes list quotes contain the quotes
         quoteService.retrieveQuotes(quotes, firebaseService) {
             isQuotesLoaded = true
         }

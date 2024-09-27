@@ -4,7 +4,12 @@ import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
 class QuoteService {
-     fun retrieveQuotes(quotesList: SnapshotStateList<Quote>, firebaseService: FirebaseService, onComplete: () -> Unit): SnapshotStateList<Quote> {
+    // Calls the quotesToList function from FirebaseService and returns the list
+    // Also logs the quotes to the console and prints the amount of quotes received
+    fun retrieveQuotes(quotesList: SnapshotStateList<Quote>,
+                        firebaseService: FirebaseService,
+                        onComplete: () -> Unit):
+             SnapshotStateList<Quote> {
 
          var counter = 0
 

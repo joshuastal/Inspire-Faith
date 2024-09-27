@@ -9,7 +9,7 @@ class FirebaseService{
     val db = Firebase.firestore
 
     private var counter = 0
-    // Sends the quotes to LogCat
+    // Log quotes for debugging
     val logQuotes = db.collection("Quotes").get()
         .addOnSuccessListener { result ->
             for (document in result) {
@@ -21,6 +21,8 @@ class FirebaseService{
             Log.w("FirebaseService", "Error getting documents.", exception)
         }
 
+
+    // Takes in an empty list and adds the quotes from firestore to it
     fun quotesToList(
         quotesList: SnapshotStateList<Quote>,
         onComplete: (List<Quote>) -> Unit,
