@@ -218,6 +218,7 @@ fun FavoriteIconButton(quote: Quote) {
         isFavorited = FavoritesManager.isFavorite(quote)
     }
 
+
     IconButton(
         onClick = {
             if (isFavorited) {
