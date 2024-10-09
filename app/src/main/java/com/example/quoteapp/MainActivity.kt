@@ -3,6 +3,7 @@ package com.example.quoteapp
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -25,7 +27,13 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +47,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -154,8 +164,6 @@ fun DisplayAllQuotes(quotes: MutableList<Quote>, modifier: Modifier = Modifier) 
 
 @Composable
 fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
-    val clipboardManager = LocalClipboardManager.current
-
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -167,7 +175,8 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
             modifier = Modifier
                 .fillMaxWidth()
         ){
-            Text(text = quote.quote,
+            Text(
+                text = "\"${quote.quote}\"",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
@@ -184,26 +193,72 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
 
             )
             Spacer(modifier = Modifier.height(20.dp)) // Space between author and button
-            Row(){
-                Button(
-                    onClick = {
-                        // Create the text to copy
-                        val textToCopy = "${quote.quote}\n- ${quote.author}"
-                        // Copy the text to clipboard
-                        clipboardManager.setText(AnnotatedString(textToCopy))
-                    }
-                ) {
-                    Text("Share")
-                }
+            Row(
+
+            ){
+
+                ShareIconButton(quote = quote)
+
                 Spacer(modifier = Modifier.width(20.dp)) // Space between author and button
-                Button(
-                    onClick = {
-                        FavoritesManager.addToFavorites(quote) // Use the singleton manager
-                    }
-                ) {
-                    Text("Favorite")
-                }
+
+                FavoriteIconButton(quote = quote)
             }
         }
     }
 }
+
+
+@Composable
+fun FavoriteIconButton(quote: Quote) {
+    // Store the initial state of whether the quote is favorited or not
+    var isFavorited by remember { mutableStateOf(false) }
+
+    // Use a side effect to get the favorite status initially and update the state accordingly
+    LaunchedEffect(quote) {
+        isFavorited = FavoritesManager.isFavorite(quote)
+    }
+
+    IconButton(
+        onClick = {
+            if (isFavorited) {
+                FavoritesManager.removeFromFavorites(quote)
+                FavoritesManager.getFavorites()
+            } else {
+                FavoritesManager.addToFavorites(quote)
+                FavoritesManager.getFavorites()
+            }
+            isFavorited = !isFavorited // Toggle the local state
+        }
+    ) {
+        Icon(
+            imageVector = if (isFavorited) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+            contentDescription = if (isFavorited) "Unfavorite" else "Favorite",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
+@Composable
+fun ShareIconButton(quote: Quote){
+    val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+
+    IconButton(
+        onClick = {
+            // Create the text to copy
+            val textToCopy = "\"${quote.quote}\"\n- ${quote.author}"
+            // Copy the text to clipboard
+            clipboardManager.setText(AnnotatedString(textToCopy))
+            Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Default.Share,
+            contentDescription = "Copy quote",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
