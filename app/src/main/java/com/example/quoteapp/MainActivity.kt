@@ -137,10 +137,6 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
 
 
 
-
-
-
-
 @Composable
 fun DisplayAllQuotes(quotes: MutableList<Quote>, modifier: Modifier = Modifier) {
     Column(modifier = modifier
