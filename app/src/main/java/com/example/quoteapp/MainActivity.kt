@@ -157,3 +157,4 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
         }
     }
 }
+
