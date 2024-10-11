@@ -28,6 +28,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
@@ -219,6 +220,7 @@ fun FavoriteIconButton(quote: Quote) {
     }
 
 
+
     IconButton(
         onClick = {
             if (isFavorited) {
@@ -255,7 +257,7 @@ fun ShareIconButton(quote: Quote){
         }
     ) {
         Icon(
-            imageVector = Icons.Default.Share,
+            imageVector = Icons.Default.ContentCopy,
             contentDescription = "Copy quote",
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(24.dp)
