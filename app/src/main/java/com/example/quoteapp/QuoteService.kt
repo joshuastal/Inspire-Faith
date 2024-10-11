@@ -8,7 +8,7 @@ class QuoteService {
     // Also logs the quotes to the console and prints the amount of quotes received
     fun retrieveQuotes(quotesList: SnapshotStateList<Quote>,
                         firebaseService: FirebaseService,
-                        onComplete: () -> Unit):
+                       ):
              SnapshotStateList<Quote> {
 
          var counter = 0
@@ -23,7 +23,6 @@ class QuoteService {
                 }
                 Log.d("QuoteService", "ALL QUOTES RECEIVED: TOTAL $counter")
 
-                onComplete() // Return the list of quotes
 
             },
             onFailure = { exception ->
