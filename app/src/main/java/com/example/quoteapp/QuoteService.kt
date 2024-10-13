@@ -21,7 +21,7 @@ class QuoteService {
                     counter++ // Increment the counter for each quote
                     Log.d("QuoteService", "QuoteService $counter: ${quote.quote}, Author: ${quote.author}")
                 }
-                Log.d("QuoteService", "ALL QUOTES RECEIVED: TOTAL $counter")
+                Log.d("QuoteService", "ALL QUOTES RECEIVED: TOTAL " + quotes.size)
 
 
             },
@@ -32,4 +32,7 @@ class QuoteService {
         )
         return quotesList // Return the list of quotes
     }
+
+
+
 }

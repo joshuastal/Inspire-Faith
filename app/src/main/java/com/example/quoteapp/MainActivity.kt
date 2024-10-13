@@ -7,8 +7,10 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +38,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,6 +69,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        FavoritesManager.init(this)
+
         var isQuotesLoaded by mutableStateOf(false)
 
         // Incorporate the splash screen
@@ -90,8 +95,6 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
     val firebaseService = FirebaseService()
     val quoteService = QuoteService()
     val quotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
-
-    quoteService.retrieveQuotes(quotes, firebaseService)
 
     LaunchedEffect(Unit) {
         // Retrieve quotes asynchronously
@@ -127,18 +130,23 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                 QuoteCard(quote = quotes[page], modifier = Modifier.fillMaxSize())
           }
 
-
-            // scroll to page
-            Button(onClick = {
-                coroutineScope.launch {
-                    // Call scroll to on pagerState
-                    pagerState.scrollToPage(quotes.lastIndex-1)
+            Row (modifier = Modifier
+                .fillMaxSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Bottom
+            ){
+                // scroll to page
+                Button(onClick = {
+                    coroutineScope.launch {
+                        // Call scroll to on pagerState
+                        pagerState.scrollToPage(quotes.lastIndex-1)
+                    }
+                }, modifier = Modifier
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                ) {
+                    Text("Jump to second to last page")
                 }
-            }, modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .windowInsetsPadding(WindowInsets.navigationBars)
-            ) {
-                Text("Jump to second to last page")
+
             }
 
 
@@ -171,38 +179,49 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
            .padding(16.dp)
            .background(MaterialTheme.colorScheme.background)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        OutlinedCard(
+            border = BorderStroke(1.dp, Color.White),
             modifier = Modifier
-                .fillMaxWidth()
+                .size(width = 600.dp, height = 300.dp)
         ){
-            Text(
-                text = "\"${quote.quote}\"",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center,
-                fontSize = 17.sp,
-                modifier = Modifier
-            )
-            Text(
-                text = quote.author,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(top = 20.dp)
+            Box(modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
 
-            )
-            Spacer(modifier = Modifier.height(20.dp)) // Space between author and button
-            Row(
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    Text(
+                        text = "\"${quote.quote}\"",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                        fontSize = 17.sp,
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+                    )
+                    Text(
+                        text = quote.author,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(top = 20.dp)
 
-            ){
+                    )
+                    Spacer(modifier = Modifier.height(20.dp)) // Space between author and button
+                    Row(
 
-                ShareIconButton(quote = quote)
+                    ){
 
-                Spacer(modifier = Modifier.width(20.dp)) // Space between author and button
+                        ShareIconButton(quote = quote)
 
-                FavoriteIconButton(quote = quote)
+                        Spacer(modifier = Modifier.width(20.dp)) // Space between author and button
+
+                        FavoriteIconButton(quote = quote)
+                    }
+                }
             }
         }
     }
@@ -219,16 +238,17 @@ fun FavoriteIconButton(quote: Quote) {
         isFavorited = FavoritesManager.isFavorite(quote)
     }
 
-
-
     IconButton(
         onClick = {
             if (isFavorited) {
                 FavoritesManager.removeFromFavorites(quote)
                 FavoritesManager.getFavorites()
+                Log.d("Favorites", "Favorite removed: ${quote.quote}, Author: ${quote.author}")
+
             } else {
                 FavoritesManager.addToFavorites(quote)
                 FavoritesManager.getFavorites()
+                Log.d("Favorites", "Favorite added: ${quote.quote}, Author: ${quote.author}")
             }
             isFavorited = !isFavorited // Toggle the local state
         }
@@ -266,3 +286,27 @@ fun ShareIconButton(quote: Quote){
 }
 
 
+@Composable
+fun addQuoteButton(){
+//    Button(onClick = {
+//        // Add a sample quote when the button is clicked
+//        val sampleQuote = Quote("This is a sample quote.", "Author Name")
+//        quotes.add(sampleQuote)
+//        quotes.forEach { quote ->
+//            Log.d("QuoteService", "QuoteService: ${quote.quote}, Author: ${quote.author}")
+//        }
+//        Log.d("QuoteService", "QUOTES SIZE " + quotes.size)
+//
+//    }, modifier = Modifier
+//        .windowInsetsPadding(WindowInsets.navigationBars)) {
+//        Text("Add Quote")
+//
+//    }
+
+    IconButton(onClick = {
+
+    }
+        ){
+
+    }
+}
