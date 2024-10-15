@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -25,21 +26,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,6 +58,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -120,7 +127,6 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.background)
             .windowInsetsPadding(WindowInsets.statusBars)
         ) {
-
             VerticalPager(
                 state = pagerState,
                 userScrollEnabled = true,
@@ -128,28 +134,68 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
             ) { page ->
                 // Display a single quote for each page
                 QuoteCard(quote = quotes[page], modifier = Modifier.fillMaxSize())
-          }
-
-            Row (modifier = Modifier
-                .fillMaxSize(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Bottom
-            ){
-                // scroll to page
-                Button(onClick = {
-                    coroutineScope.launch {
-                        // Call scroll to on pagerState
-                        pagerState.scrollToPage(quotes.lastIndex-1)
-                    }
-                }, modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                ) {
-                    Text("Jump to second to last page")
-                }
-
             }
 
+            Row(
 
+            ) {
+
+                Button(
+                    onClick = {
+                        FavoritesManager.getFavorites()
+                    },
+                    modifier = Modifier
+
+                ) {
+                    Text("Get Favorites")
+                }
+
+                Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+
+                Button(
+                    onClick = {
+                        FavoritesManager.clearFavorites()
+                    },
+                    modifier = Modifier
+
+                ) {
+                    Text("Clear Favorites")
+                }
+
+                Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            // Call scroll to on pagerState
+                            pagerState.scrollToPage(quotes.lastIndex - 1)
+                        }
+                    })
+                {
+                    Text("2nd to last")
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+            ) {
+                AddQuoteButton(
+                    { newQuote ->
+                    // Add the new quote to the quotes list
+                        quotes.add(newQuote)
+                        Log.d("AddButton", "New Quote Added...")
+                        Log.d("AddButton", "New quotes size: " + quotes.size)
+                        quotes.forEach { quote ->
+                            Log.d("AddButton", "AddButton: ${quote.quote}, Author: ${quote.author}")
+                        }
+
+                    }, modifier = Modifier
+                    .align(Alignment.BottomEnd) // Align this button at the bottom right
+                    .padding(end = 16.dp))// Add some padding from the edges)
+
+            }
         }
     }
 }
@@ -176,22 +222,21 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-           .padding(16.dp)
-           .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         OutlinedCard(
-            border = BorderStroke(1.dp, Color.White),
+            border = BorderStroke(2.dp, Color.White),
             modifier = Modifier
-                .size(width = 600.dp, height = 300.dp)
+                .wrapContentHeight() // Wrap the height to fit the content
+                .fillMaxWidth() // Fill the width but allow height to adjust
         ){
-            Box(modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(16.dp) // Add padding to the card content
                 ){
                     Text(
                         text = "\"${quote.quote}\"",
@@ -199,7 +244,7 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
                         fontSize = 17.sp,
-                        modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp)
                     )
                     Text(
                         text = quote.author,
@@ -208,16 +253,12 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp,
                         modifier = Modifier.padding(top = 20.dp)
-
                     )
                     Spacer(modifier = Modifier.height(20.dp)) // Space between author and button
-                    Row(
-
-                    ){
-
+                    Row {
                         ShareIconButton(quote = quote)
 
-                        Spacer(modifier = Modifier.width(20.dp)) // Space between author and button
+                        Spacer(modifier = Modifier.width(20.dp)) // Space between share and favorite
 
                         FavoriteIconButton(quote = quote)
                     }
@@ -287,26 +328,68 @@ fun ShareIconButton(quote: Quote){
 
 
 @Composable
-fun addQuoteButton(){
-//    Button(onClick = {
-//        // Add a sample quote when the button is clicked
-//        val sampleQuote = Quote("This is a sample quote.", "Author Name")
-//        quotes.add(sampleQuote)
-//        quotes.forEach { quote ->
-//            Log.d("QuoteService", "QuoteService: ${quote.quote}, Author: ${quote.author}")
-//        }
-//        Log.d("QuoteService", "QUOTES SIZE " + quotes.size)
-//
-//    }, modifier = Modifier
-//        .windowInsetsPadding(WindowInsets.navigationBars)) {
-//        Text("Add Quote")
-//
-//    }
+fun AddQuoteButton(onAddQuote: (Quote) -> Unit, modifier: Modifier = Modifier) {
 
-    IconButton(onClick = {
+    var isDialogOpen by remember { mutableStateOf(false) }
+    var author by remember { mutableStateOf("") }
+    var quote by remember { mutableStateOf("") }
 
-    }
-        ){
+        Button(
+            modifier = modifier
+                .size(55.dp),
+            shape = CircleShape,
+            contentPadding = PaddingValues(0.dp),
+            onClick = {
+                isDialogOpen = true
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add quote",
+                modifier = Modifier.size(36.dp)
+            )
+        }
 
+
+    if (isDialogOpen) {
+        AlertDialog(
+            onDismissRequest = { isDialogOpen = false },
+            title = { Text("Add Quote") },
+            text = {
+                Column {
+                    TextField(
+                        value = author,
+                        onValueChange = { author = it },
+                        label = { Text("Author") }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextField(
+                        value = quote,
+                        onValueChange = { quote = it },
+                        label = { Text("Quote") }
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (author.isNotBlank() && quote.isNotBlank()) {
+                            onAddQuote(Quote(author, quote)) // Create the Quote object
+                            isDialogOpen = false // Close the dialog
+                            author = "" // Clear the text field
+                            quote = "" // Clear the text field
+                        }
+                    }
+                ) {
+                    Text("Add")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { isDialogOpen = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
+

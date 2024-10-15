@@ -60,10 +60,10 @@ object FavoritesManager {
         favoriteQuotes.forEach { quote ->
             counter++ // Increment the counter for each quote
             Log.d("Favorites", "Favorite #$counter: ${quote.quote}, Author: ${quote.author}")
-
-            if(favoriteQuotes.isEmpty())
-                Log.d("Favorites", "No favorite quotes found")
         }
+
+        if(favoriteQuotes.isEmpty())
+            Log.d("Favorites", "No favorite quotes found")
 
 
         return favoriteQuotes
@@ -77,9 +77,10 @@ object FavoritesManager {
         favoriteQuotes.forEach { quote ->
             counter++ // Increment the counter for each quote
             Log.d("Favorites", "Favorite #$counter: ${quote.quote}, Author: ${quote.author}")
-
-            if(favoriteQuotes.isEmpty())
-                Log.d("Favorites", "No favorite quotes found")
         }
+        if(favoriteQuotes.isEmpty())
+            Log.d("Favorites", "No favorite quotes found")
+
+        Log.d("Favorites", "All favorite quotes cleared")
     }
 }
