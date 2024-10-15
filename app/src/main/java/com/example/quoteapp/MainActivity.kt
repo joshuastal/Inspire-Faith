@@ -102,8 +102,14 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
     val firebaseService = FirebaseService()
     val quoteService = QuoteService()
     val quotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+
+        // Load local quotes from SharedPreferences
+        val savedQuotes = LocalQuoteManager.getSavedQuotes(context)
+        quotes.addAll(savedQuotes)
+
         // Retrieve quotes asynchronously
         quoteService.retrieveQuotes(quotes, firebaseService)
 
@@ -114,7 +120,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
 
         // Call onComplete after quotes are loaded
         onComplete()
-    }
+    } // Splashscreen conditions
 
 
     val pagerState = rememberPagerState(pageCount = { quotes.size })
@@ -136,45 +142,61 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                 QuoteCard(quote = quotes[page], modifier = Modifier.fillMaxSize())
             }
 
-            Row(
-
-            ) {
-
-                Button(
-                    onClick = {
-                        FavoritesManager.getFavorites()
-                    },
-                    modifier = Modifier
+            Column {
+                Row(
 
                 ) {
-                    Text("Get Favorites")
+
+                    Button(
+                        onClick = {
+                            FavoritesManager.getFavorites()
+                        },
+                        modifier = Modifier
+
+                    ) {
+                        Text("Get Favorites")
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+
+                    Button(
+                        onClick = {
+                            FavoritesManager.clearFavorites()
+                        },
+                        modifier = Modifier
+
+                    ) {
+                        Text("Clear Favorites")
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                // Call scroll to on pagerState
+                                pagerState.scrollToPage(quotes.lastIndex - 1)
+                            }
+                        })
+                    {
+                        Text("2nd to last")
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
-
-                Button(
-                    onClick = {
-                        FavoritesManager.clearFavorites()
-                    },
-                    modifier = Modifier
-
-                ) {
-                    Text("Clear Favorites")
+                Row {
+                    Button(
+                        onClick = {
+                            quotes.forEach { quote ->
+                                Log.d("MainScreen", "MainScreen : ${quote.quote}, Author: ${quote.author}")
+                            }
+                            Log.d("MainScreen", "MainScreen : " + quotes.size)
+                        })
+                    {
+                        Text("Get Quotes")
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
-
-                Button(
-                    onClick = {
-                        coroutineScope.launch {
-                            // Call scroll to on pagerState
-                            pagerState.scrollToPage(quotes.lastIndex - 1)
-                        }
-                    })
-                {
-                    Text("2nd to last")
-                }
-            }
+            } // Debug Buttons
 
             Box(
                 modifier = Modifier
@@ -200,22 +222,6 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
     }
 }
 
-
-
-@Composable
-fun DisplayAllQuotes(quotes: MutableList<Quote>, modifier: Modifier = Modifier) {
-    Column(modifier = modifier
-        .verticalScroll(rememberScrollState())
-    ) {
-        quotes.forEach { quote -> // For each quote in quotes (quote is the object the for loop is looking at)
-            Text(
-                text = "Quote: ${quote.quote}\nAuthor: ${quote.author}",
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(8.dp) // Add padding for better readability
-            )
-        }
-    }
-}
 
 @Composable
 fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
@@ -244,7 +250,7 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
                         fontSize = 17.sp,
-                        modifier = Modifier.padding(horizontal = 20.dp)
+                        modifier = Modifier.padding(top = 10.dp)
                     )
                     Text(
                         text = quote.author,
@@ -333,6 +339,7 @@ fun AddQuoteButton(onAddQuote: (Quote) -> Unit, modifier: Modifier = Modifier) {
     var isDialogOpen by remember { mutableStateOf(false) }
     var author by remember { mutableStateOf("") }
     var quote by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
         Button(
             modifier = modifier
@@ -374,7 +381,14 @@ fun AddQuoteButton(onAddQuote: (Quote) -> Unit, modifier: Modifier = Modifier) {
                 Button(
                     onClick = {
                         if (author.isNotBlank() && quote.isNotBlank()) {
-                            onAddQuote(Quote(author, quote)) // Create the Quote object
+                            val newQuote = Quote(author, quote)
+                            onAddQuote(newQuote) // Create the Quote object
+
+                            // Save the updated quotes list locally
+                            val updatedQuotes = LocalQuoteManager.getSavedQuotes(context)
+                            updatedQuotes.add(newQuote)
+                            LocalQuoteManager.saveQuotes(context, updatedQuotes)
+
                             isDialogOpen = false // Close the dialog
                             author = "" // Clear the text field
                             quote = "" // Clear the text field
