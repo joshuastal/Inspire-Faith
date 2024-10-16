@@ -293,15 +293,16 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
                         .fillMaxWidth()
                         .padding(16.dp) // Add padding to the card content
                 ){
-                    Text(
+                    Text( // QUOTE BODY
                         text = "\"${quote.quote}\"",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
-                        fontSize = 17.sp,
+                        fontSize = 24.sp,
+                        lineHeight = 32.sp,
                         modifier = Modifier.padding(top = 10.dp)
                     )
-                    Text(
+                    Text( // AUTHOR
                         text = quote.author,
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onBackground,
