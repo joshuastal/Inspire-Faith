@@ -102,13 +102,22 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
     val firebaseService = FirebaseService()
     val quoteService = QuoteService()
     val quotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
+    val localQuotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
+
     val context = LocalContext.current
+    var isLoading by remember { mutableStateOf(true) } // Loading state for Firestore quotes
 
     LaunchedEffect(Unit) {
 
         // Load local quotes from SharedPreferences
         val savedQuotes = LocalQuoteManager.getSavedQuotes(context)
-        quotes.addAll(savedQuotes)
+
+        // Ensure no duplicates are added
+        savedQuotes.forEach { savedQuote ->
+            if (!localQuotes.contains(savedQuote)) {
+                localQuotes.add(savedQuote)
+            }
+        }
 
         // Retrieve quotes asynchronously
         quoteService.retrieveQuotes(quotes, firebaseService)
@@ -117,11 +126,13 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
         while (quotes.isEmpty()) {
             delay(1) // Check every 100ms if quotes are loaded
         }
+        isLoading = false // Remote quotes are loaded, so no more loading state
 
         // Call onComplete after quotes are loaded
         onComplete()
     } // Splashscreen conditions
-
+    val allQuotes = if (isLoading == false) (localQuotes + quotes).toMutableList() else localQuotes.toMutableList()
+    allQuotes.shuffle()
 
     val pagerState = rememberPagerState(pageCount = { quotes.size })
     val coroutineScope = rememberCoroutineScope()
@@ -139,7 +150,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                 modifier = Modifier
             ) { page ->
                 // Display a single quote for each page
-                QuoteCard(quote = quotes[page], modifier = Modifier.fillMaxSize())
+                QuoteCard(quote = allQuotes[page], modifier = Modifier.fillMaxSize())
             }
 
             Column {
@@ -186,13 +197,48 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                 Row {
                     Button(
                         onClick = {
-                            quotes.forEach { quote ->
-                                Log.d("MainScreen", "MainScreen : ${quote.quote}, Author: ${quote.author}")
+                            allQuotes.forEach { quote ->
+                                Log.d("MainScreen", "MainScreen: ${quote.quote}, Author: ${quote.author}")
                             }
-                            Log.d("MainScreen", "MainScreen : " + quotes.size)
+                            Log.d("MainScreen", "MainScreen: " + allQuotes.size)
                         })
                     {
                         Text("Get Quotes")
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+
+                    Button(
+                        onClick = {
+                            localQuotes.clear()
+
+                            LocalQuoteManager.saveQuotes(context, localQuotes)
+
+
+                            if(localQuotes.isEmpty()){
+                                Log.d("MainScreen", "localQuotes cleared, size is now: " + localQuotes.size)
+                            } else{
+                                localQuotes.forEach { quote ->
+                                    Log.d("MainScreen", "LocalQuotes : ${quote.quote}, Author: ${quote.author}")
+                                }
+                            }
+                        }
+                    ) {
+                        Text("Clear Local Quotes")
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+
+                    Button(modifier = Modifier,
+                        onClick = {
+                            localQuotes.forEach { quote ->
+                                Log.d("MainScreen", "LocalQuotes : ${quote.quote}, Author: ${quote.author}")
+                            }
+                            if(localQuotes.isEmpty())
+                                Log.d("MainScreen", "localQuotes is empty...")
+                        }
+                    ) {
+                        Text("Get Local Quotes")
                     }
                 }
 
@@ -206,7 +252,10 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                 AddQuoteButton(
                     { newQuote ->
                     // Add the new quote to the quotes list
-                        quotes.add(newQuote)
+                        localQuotes.add(newQuote)
+                        LocalQuoteManager.saveQuotes(context, localQuotes)
+
+
                         Log.d("AddButton", "New Quote Added...")
                         Log.d("AddButton", "New quotes size: " + quotes.size)
                         quotes.forEach { quote ->
@@ -341,21 +390,21 @@ fun AddQuoteButton(onAddQuote: (Quote) -> Unit, modifier: Modifier = Modifier) {
     var quote by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-        Button(
-            modifier = modifier
-                .size(55.dp),
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            onClick = {
-                isDialogOpen = true
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Add quote",
-                modifier = Modifier.size(36.dp)
-            )
+    Button(
+        modifier = modifier
+            .size(55.dp),
+        shape = CircleShape,
+        contentPadding = PaddingValues(0.dp),
+        onClick = {
+            isDialogOpen = true
         }
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Add quote",
+            modifier = Modifier.size(36.dp)
+        )
+    }
 
 
     if (isDialogOpen) {
