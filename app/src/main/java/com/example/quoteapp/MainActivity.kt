@@ -1,6 +1,5 @@
 package com.example.quoteapp
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -10,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,17 +25,17 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -57,8 +55,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -134,8 +130,12 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
     val allQuotes = if (isLoading == false) (localQuotes + quotes).toMutableList() else localQuotes.toMutableList()
     allQuotes.shuffle()
 
-    val pagerState = rememberPagerState(pageCount = { quotes.size })
+
+
+    val pagerState = rememberPagerState(pageCount = { allQuotes.size })
     val coroutineScope = rememberCoroutineScope()
+
+
 
     MaterialTheme(
     ) {
@@ -168,7 +168,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                         Text("Get Favorites")
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+                    Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
 
                     Button(
                         onClick = {
@@ -180,7 +180,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                         Text("Clear Favorites")
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+                    Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
 
                     Button(
                         onClick = {
@@ -206,17 +206,19 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                         Text("Get Quotes")
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+                    Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
 
                     Button(
                         onClick = {
                             localQuotes.clear()
 
+                            if(!localQuotes.isEmpty()){
+                                Log.d("MainScreen", "localQuotes cleared, size is now: " + localQuotes.size)
+                            }
                             LocalQuoteManager.saveQuotes(context, localQuotes)
 
-
                             if(localQuotes.isEmpty()){
-                                Log.d("MainScreen", "localQuotes cleared, size is now: " + localQuotes.size)
+                                Log.d("MainScreen", "localQuotes is already empty...")
                             } else{
                                 localQuotes.forEach { quote ->
                                     Log.d("MainScreen", "LocalQuotes : ${quote.quote}, Author: ${quote.author}")
@@ -227,7 +229,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                         Text("Clear Local Quotes")
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp)) // Add some space between the buttons
+                    Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
 
                     Button(modifier = Modifier,
                         onClick = {
@@ -264,7 +266,12 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
 
                     }, modifier = Modifier
                     .align(Alignment.BottomEnd) // Align this button at the bottom right
-                    .padding(end = 16.dp))// Add some padding from the edges)
+                    .padding(end = 8.dp))// Add some padding from the edges)
+
+                    TooTopButton(pagerState, modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 8.dp) // Add some padding from the edges)
+                    )
 
             }
         }
@@ -281,7 +288,7 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
             .background(MaterialTheme.colorScheme.background)
     ) {
         OutlinedCard(
-            border = BorderStroke(2.dp, Color.White),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .wrapContentHeight() // Wrap the height to fit the content
                 .fillMaxWidth() // Fill the width but allow height to adjust
@@ -457,3 +464,27 @@ fun AddQuoteButton(onAddQuote: (Quote) -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun TooTopButton(pagerState: PagerState, modifier: Modifier = Modifier) {
+    val coroutineScope = rememberCoroutineScope() // Remember a coroutine scope
+
+    Button(
+        modifier = modifier
+            .size(55.dp),
+        shape = CircleShape,
+        contentPadding = PaddingValues(0.dp),
+        onClick = {
+            coroutineScope.launch {
+                pagerState.animateScrollToPage(0) // Scroll with animation
+            }
+        },
+
+        ) {
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowUp,
+            contentDescription = "Go to first page",
+            modifier = Modifier.size(36.dp)
+        )
+    }
+}

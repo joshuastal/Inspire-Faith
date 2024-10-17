@@ -59,11 +59,11 @@ object FavoritesManager {
 
         favoriteQuotes.forEach { quote ->
             counter++ // Increment the counter for each quote
-            Log.d("Favorites", "Favorite #$counter: ${quote.quote}, Author: ${quote.author}")
+            Log.d("MainScreen", "Favorite #$counter: ${quote.quote}, Author: ${quote.author}")
         }
 
         if(favoriteQuotes.isEmpty())
-            Log.d("Favorites", "No favorite quotes found")
+            Log.d("MainScreen", "No favorite quotes found")
 
 
         return favoriteQuotes
@@ -76,11 +76,11 @@ object FavoritesManager {
         var counter = 0
         favoriteQuotes.forEach { quote ->
             counter++ // Increment the counter for each quote
-            Log.d("Favorites", "Favorite #$counter: ${quote.quote}, Author: ${quote.author}")
+            Log.d("MainScreen", "Favorite #$counter: ${quote.quote}, Author: ${quote.author}")
         }
         if(favoriteQuotes.isEmpty())
-            Log.d("Favorites", "No favorite quotes found")
+            Log.d("MainScreen", "No favorite quotes found")
 
-        Log.d("Favorites", "All favorite quotes cleared")
+        Log.d("MainScreen", "All favorite quotes cleared")
     }
 }
