@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.quoteapp"
+    namespace = "com.orthodoxquotesapp.quoteapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.quoteapp"
+        applicationId = "com.orthodoxquotesapp.quoteapp"
         minSdk = 28 // default 24
         targetSdk = 34
         versionCode = 1
@@ -22,12 +22,16 @@ android {
     }
 
     buildTypes {
+        debug{
+            isDebuggable = false
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isDebuggable = false
         }
     }
     compileOptions {

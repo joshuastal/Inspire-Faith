@@ -1,4 +1,4 @@
-package com.example.quoteapp
+package com.orthodoxquotesapp.quoteapp
 
 data class Quote(
     val author: String,

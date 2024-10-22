@@ -1,4 +1,4 @@
-package com.example.quoteapp
+package com.orthodoxquotesapp.quoteapp
 
 import android.os.Bundle
 import android.util.Log
@@ -31,7 +31,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -62,7 +61,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.example.quoteapp.ui.theme.QuoteAppTheme
+import com.orthodoxquotesapp.quoteapp.theme.QuoteAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -127,8 +126,10 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
         // Call onComplete after quotes are loaded
         onComplete()
     } // Splashscreen conditions
+
     val allQuotes = if (isLoading == false) (localQuotes + quotes).toMutableList() else localQuotes.toMutableList()
     allQuotes.shuffle()
+
 
 
 
@@ -147,10 +148,14 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
             VerticalPager(
                 state = pagerState,
                 userScrollEnabled = true,
-                modifier = Modifier
             ) { page ->
                 // Display a single quote for each page
                 QuoteCard(quote = allQuotes[page], modifier = Modifier.fillMaxSize())
+                Text(
+                    text = "Page: ${page + 1}",
+                    modifier = Modifier,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
 
             Column {
@@ -243,6 +248,9 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                         Text("Get Local Quotes")
                     }
                 }
+                Row {
+
+                }
 
             } // Debug Buttons
 
@@ -250,6 +258,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxSize()
                     .windowInsetsPadding(WindowInsets.navigationBars)
+                    .padding(bottom = 8.dp)
             ) {
                 AddQuoteButton(
                     { newQuote ->
@@ -410,7 +419,8 @@ fun AddQuoteButton(onAddQuote: (Quote) -> Unit, modifier: Modifier = Modifier) {
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Add quote",
-            modifier = Modifier.size(36.dp)
+            modifier = Modifier
+                .size(36.dp)
         )
     }
 
@@ -488,3 +498,4 @@ fun TooTopButton(pagerState: PagerState, modifier: Modifier = Modifier) {
         )
     }
 }
+

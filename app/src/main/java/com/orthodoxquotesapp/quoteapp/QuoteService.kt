@@ -1,4 +1,4 @@
-package com.example.quoteapp
+package com.orthodoxquotesapp.quoteapp
 
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -7,7 +7,7 @@ class QuoteService {
     // Calls the quotesToList function from FirebaseService and returns the list
     // Also logs the quotes to the console and prints the amount of quotes received
     fun retrieveQuotes(quotesList: SnapshotStateList<Quote>,
-                        firebaseService: FirebaseService,
+                       firebaseService: FirebaseService,
                        ):
              SnapshotStateList<Quote> {
 

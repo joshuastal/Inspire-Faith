@@ -1,6 +1,7 @@
+package com.orthodoxquotesapp.quoteapp
+
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.quoteapp.Quote
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

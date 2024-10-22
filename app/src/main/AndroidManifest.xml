@@ -6,15 +6,15 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/app_icon"
+        android:icon="@mipmap/second_ortho_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/app_icon_round"
+        android:roundIcon="@mipmap/second_ortho_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting"
         android:windowSoftInputMode="adjustResize"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="com.orthodoxquotesapp.quoteapp.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>

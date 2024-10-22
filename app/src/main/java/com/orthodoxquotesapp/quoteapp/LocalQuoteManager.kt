@@ -1,4 +1,4 @@
-package com.example.quoteapp
+package com.orthodoxquotesapp.quoteapp
 
 import android.content.Context
 import com.google.gson.Gson
