@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -95,9 +94,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MainScreen(onComplete: () -> Unit, navController: NavController, modifier: Modifier = Modifier) {
+fun MainScreen(
+    onComplete: () -> Unit,
+    navController: NavController,
+    favoritesPagerState: PagerState,
+    modifier: Modifier = Modifier
+) {
 
     val firebaseService = FirebaseService()
     val quoteService = QuoteService()
@@ -107,6 +110,9 @@ fun MainScreen(onComplete: () -> Unit, navController: NavController, modifier: M
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) } // Loading state for Firestore quotes
     val allQuotes = remember { mutableStateListOf<Quote>() }
+
+    val coroutineScope = rememberCoroutineScope() // For a debug button
+
 
     LaunchedEffect(Unit) {
 
@@ -159,12 +165,7 @@ fun MainScreen(onComplete: () -> Unit, navController: NavController, modifier: M
         selectedTabIndex = pagerState.currentPage
     }
 
-    val coroutineScope = rememberCoroutineScope()
-
-
-
-    MaterialTheme(
-    ) {
+    MaterialTheme {
         Box(modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
@@ -184,7 +185,10 @@ fun MainScreen(onComplete: () -> Unit, navController: NavController, modifier: M
                     }
                     1 -> {
                         // Your Favorites screen placeholder
-                        FavoritesScreen(navController)
+                        FavoritesScreen(
+                            navController,
+                            pagerState = favoritesPagerState
+                        )
                     }
                 }
             }
@@ -196,15 +200,13 @@ fun MainScreen(onComplete: () -> Unit, navController: NavController, modifier: M
                     Tab(
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
-                        text = { Text(item.title) }
+                        text = { Text(item.title) },
                     )
                 }
             }
 
             Column {
-                Row(
-
-                ) {
+                Row {
 
                     Button(
                         onClick = {
@@ -293,8 +295,6 @@ fun MainScreen(onComplete: () -> Unit, navController: NavController, modifier: M
             } // Debug Buttons
 
 
-
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -319,10 +319,12 @@ fun MainScreen(onComplete: () -> Unit, navController: NavController, modifier: M
                     .align(Alignment.BottomEnd) // Align this button at the bottom right
                     .padding(end = 8.dp))// Add some padding from the edges)
 
-                    TooTopButton(verticalPagerState, modifier = Modifier
+                TooTopButton(
+                    pagerState = if (selectedTabIndex == 0) verticalPagerState else favoritesPagerState,
+                    modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(start = 8.dp) // Add some padding from the edges)
-                    )
+                        .padding(start = 8.dp)
+                )
 
             }
         }
@@ -516,7 +518,6 @@ fun AddQuoteButton(onAddQuote: (Quote) -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TooTopButton(pagerState: PagerState, modifier: Modifier = Modifier) {
     val coroutineScope = rememberCoroutineScope() // Remember a coroutine scope

@@ -2,6 +2,7 @@ package com.orthodoxquotesapp.quoteapp
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -11,6 +12,8 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
+    val favoritesPagerState = rememberPagerState(pageCount = { FavoritesManager.favoriteQuotes.size })
+
     NavHost(navController = navController, startDestination = "home") {
         composable(
             "home",
@@ -19,11 +22,12 @@ fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
             ) {
             MainScreen(
                 onComplete = onComplete,
+                favoritesPagerState = favoritesPagerState,
                 navController = navController
             )
         }
         composable("favorites") {
-            FavoritesScreen(navController)
+            FavoritesScreen(navController, favoritesPagerState)
         }
     }
 }
