@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -41,6 +42,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -61,6 +64,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.orthodoxquotesapp.quoteapp.theme.QuoteAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -81,18 +86,18 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             QuoteAppTheme {
-                MainScreen(onComplete = { isQuotesLoaded = true })
+                val navController = rememberNavController() // Create navController here
+
+                Navigation(navController = navController, onComplete = { isQuotesLoaded = true })
+                //MainScreen(onComplete = { isQuotesLoaded = true })
             }
         }
     }
-
-
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
+fun MainScreen(onComplete: () -> Unit, navController: NavController, modifier: Modifier = Modifier) {
 
     val firebaseService = FirebaseService()
     val quoteService = QuoteService()
@@ -101,6 +106,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
 
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) } // Loading state for Firestore quotes
+    val allQuotes = remember { mutableStateListOf<Quote>() }
 
     LaunchedEffect(Unit) {
 
@@ -119,21 +125,40 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
 
         // Wait until quotes are loaded
         while (quotes.isEmpty()) {
-            delay(1) // Check every 100ms if quotes are loaded
+            delay(1) // Check every 1ms if quotes are loaded
         }
+
+        // Combine and shuffle quotes only once
+        if (allQuotes.isEmpty()) {
+            allQuotes.addAll(localQuotes + quotes)
+            allQuotes.shuffle()
+        }
+
         isLoading = false // Remote quotes are loaded, so no more loading state
 
         // Call onComplete after quotes are loaded
         onComplete()
     } // Splashscreen conditions
 
-    val allQuotes = if (isLoading == false) (localQuotes + quotes).toMutableList() else localQuotes.toMutableList()
-    allQuotes.shuffle()
+    //val allQuotes = if (isLoading == false) (localQuotes + quotes).toMutableList() else localQuotes.toMutableList()
+    //allQuotes.shuffle()
 
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    val tabItems = listOf(
+        TabItem("Home"),
+        TabItem("Favorites")
+    )
 
+    val pagerState = rememberPagerState(pageCount = { tabItems.size })
+    val verticalPagerState = rememberPagerState(pageCount = {allQuotes.size})
 
+    LaunchedEffect(selectedTabIndex){
+        pagerState.animateScrollToPage(selectedTabIndex)
+    }
+    LaunchedEffect(pagerState.currentPage){
+        selectedTabIndex = pagerState.currentPage
+    }
 
-    val pagerState = rememberPagerState(pageCount = { allQuotes.size })
     val coroutineScope = rememberCoroutineScope()
 
 
@@ -145,17 +170,35 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.background)
             .windowInsetsPadding(WindowInsets.statusBars)
         ) {
-            VerticalPager(
-                state = pagerState,
-                userScrollEnabled = true,
-            ) { page ->
-                // Display a single quote for each page
-                QuoteCard(quote = allQuotes[page], modifier = Modifier.fillMaxSize())
-                Text(
-                    text = "Page: ${page + 1}",
-                    modifier = Modifier,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+
+            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+                when (page) {
+                    0 -> {
+                        // VerticalPager for quotes
+                        VerticalPager(
+                            state = verticalPagerState,
+                            userScrollEnabled = true,
+                        ) { verticalPage ->
+                            QuoteCard(quote = allQuotes[verticalPage], modifier = Modifier.fillMaxSize())
+                        }
+                    }
+                    1 -> {
+                        // Your Favorites screen placeholder
+                        FavoritesScreen(navController)
+                    }
+                }
+            }
+
+            TabRow(
+                selectedTabIndex = selectedTabIndex
+            ) {
+                tabItems.forEachIndexed { index, item ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = { Text(item.title) }
+                    )
+                }
             }
 
             Column {
@@ -191,7 +234,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                         onClick = {
                             coroutineScope.launch {
                                 // Call scroll to on pagerState
-                                pagerState.scrollToPage(quotes.lastIndex - 1)
+                                verticalPagerState.scrollToPage(allQuotes.lastIndex - 1)
                             }
                         })
                     {
@@ -215,20 +258,13 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
 
                     Button(
                         onClick = {
-                            localQuotes.clear()
 
                             if(!localQuotes.isEmpty()){
+                                localQuotes.clear()
                                 Log.d("MainScreen", "localQuotes cleared, size is now: " + localQuotes.size)
-                            }
-                            LocalQuoteManager.saveQuotes(context, localQuotes)
-
-                            if(localQuotes.isEmpty()){
+                                LocalQuoteManager.saveQuotes(context, localQuotes)
+                            } else
                                 Log.d("MainScreen", "localQuotes is already empty...")
-                            } else{
-                                localQuotes.forEach { quote ->
-                                    Log.d("MainScreen", "LocalQuotes : ${quote.quote}, Author: ${quote.author}")
-                                }
-                            }
                         }
                     ) {
                         Text("Clear Local Quotes")
@@ -249,10 +285,15 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                     }
                 }
                 Row {
-
+                    Button(onClick = { navController.navigate("favorites") }) {
+                        Text("Go to Favorites")
+                    }
                 }
 
             } // Debug Buttons
+
+
+
 
             Box(
                 modifier = Modifier
@@ -264,6 +305,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                     { newQuote ->
                     // Add the new quote to the quotes list
                         localQuotes.add(newQuote)
+                        allQuotes.add(newQuote)
                         LocalQuoteManager.saveQuotes(context, localQuotes)
 
 
@@ -277,7 +319,7 @@ fun MainScreen(onComplete: () -> Unit ,modifier: Modifier = Modifier) {
                     .align(Alignment.BottomEnd) // Align this button at the bottom right
                     .padding(end = 8.dp))// Add some padding from the edges)
 
-                    TooTopButton(pagerState, modifier = Modifier
+                    TooTopButton(verticalPagerState, modifier = Modifier
                         .align(Alignment.BottomStart)
                         .padding(start = 8.dp) // Add some padding from the edges)
                     )

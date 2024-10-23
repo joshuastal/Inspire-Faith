@@ -76,4 +76,5 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.material.icons.extended) // Use the latest version
     implementation(libs.gson)  // This adds Gson to your project
+    implementation(libs.androidx.navigation.compose)
 }
