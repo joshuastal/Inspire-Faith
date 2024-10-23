@@ -67,8 +67,11 @@ import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
+import com.orthodoxquotesapp.quoteapp.dataclasses.TabItem
+import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.FavoritesManager
+import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.LocalQuoteManager
 import com.orthodoxquotesapp.quoteapp.theme.QuoteAppTheme
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -104,15 +107,21 @@ fun MainScreen(
     modifier: Modifier = Modifier
 ) {
 
+    // UTILITIES
     val firebaseService = FirebaseService()
     val quoteService = QuoteService()
+    val context = LocalContext.current
+    // UTILITIES
+
+
+    // QUOTES MANAGEMENT
     val quotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
     val localQuotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
-
-    val context = LocalContext.current
-    var isLoading by remember { mutableStateOf(true) } // Loading state for Firestore quotes
     val allQuotes = remember { mutableStateListOf<Quote>() }
+    // QUOTES MANAGEMENT
 
+
+    var isLoading by remember { mutableStateOf(true) } // Loading state for Firestore quotes and splashscreen
     LaunchedEffect(Unit) {
 
         // Load local quotes from SharedPreferences
@@ -202,7 +211,7 @@ fun MainScreen(
             }
 
             // DEBUG BUTTONS //
-            DebugButton(allQuotes, localQuotes, context)
+            //DebugButtons(allQuotes, localQuotes, context)
             // DEBUG BUTTONS //
 
 
@@ -454,7 +463,7 @@ fun TooTopButton(pagerState: PagerState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun DebugButton(
+fun DebugButtons(
     allQuotes: List<Quote>,
     localQuotes: SnapshotStateList<Quote>,
     context: Context,

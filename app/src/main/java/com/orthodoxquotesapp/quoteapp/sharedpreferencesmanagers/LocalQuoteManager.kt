@@ -1,8 +1,9 @@
-package com.orthodoxquotesapp.quoteapp
+package com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers
 
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 
 object LocalQuoteManager {
     private const val PREFS_NAME = "quotes_prefs"

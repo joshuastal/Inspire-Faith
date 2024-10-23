@@ -2,6 +2,7 @@ package com.orthodoxquotesapp.quoteapp
 
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 
 class QuoteService {
     // Calls the quotesToList function from FirebaseService and returns the list

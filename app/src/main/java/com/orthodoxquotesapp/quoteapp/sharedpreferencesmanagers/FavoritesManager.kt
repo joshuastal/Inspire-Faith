@@ -1,10 +1,11 @@
-package com.orthodoxquotesapp.quoteapp
+package com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 
 object FavoritesManager {
     // Create a mutable list to hold favorite quotes
@@ -29,7 +30,7 @@ object FavoritesManager {
         }
     }
 
-    fun saveFavorites() {
+    private fun saveFavorites() {
         val jsonString = gson.toJson(favoriteQuotes)
         sharedPreferences.edit().putString(FAVORITES_KEY, jsonString).apply()
     }
