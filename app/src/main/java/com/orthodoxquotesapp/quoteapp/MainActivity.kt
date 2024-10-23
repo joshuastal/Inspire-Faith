@@ -1,5 +1,6 @@
 package com.orthodoxquotesapp.quoteapp
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -66,6 +67,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.orthodoxquotesapp.quoteapp.theme.QuoteAppTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -88,7 +90,6 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController() // Create navController here
 
                 Navigation(navController = navController, onComplete = { isQuotesLoaded = true })
-                //MainScreen(onComplete = { isQuotesLoaded = true })
             }
         }
     }
@@ -146,9 +147,6 @@ fun MainScreen(
         onComplete()
     } // Splashscreen conditions
 
-    //val allQuotes = if (isLoading == false) (localQuotes + quotes).toMutableList() else localQuotes.toMutableList()
-    //allQuotes.shuffle()
-
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabItems = listOf(
         TabItem("Home"),
@@ -205,94 +203,9 @@ fun MainScreen(
                 }
             }
 
-            Column {
-                Row {
-
-                    Button(
-                        onClick = {
-                            FavoritesManager.getFavorites()
-                        },
-                        modifier = Modifier
-
-                    ) {
-                        Text("Get Favorites")
-                    }
-
-                    Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
-
-                    Button(
-                        onClick = {
-                            FavoritesManager.clearFavorites()
-                        },
-                        modifier = Modifier
-
-                    ) {
-                        Text("Clear Favorites")
-                    }
-
-                    Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
-
-                    Button(
-                        onClick = {
-                            coroutineScope.launch {
-                                // Call scroll to on pagerState
-                                verticalPagerState.scrollToPage(allQuotes.lastIndex - 1)
-                            }
-                        })
-                    {
-                        Text("2nd to last")
-                    }
-                }
-
-                Row {
-                    Button(
-                        onClick = {
-                            allQuotes.forEach { quote ->
-                                Log.d("MainScreen", "MainScreen: ${quote.quote}, Author: ${quote.author}")
-                            }
-                            Log.d("MainScreen", "MainScreen: " + allQuotes.size)
-                        })
-                    {
-                        Text("Get Quotes")
-                    }
-
-                    Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
-
-                    Button(
-                        onClick = {
-
-                            if(!localQuotes.isEmpty()){
-                                localQuotes.clear()
-                                Log.d("MainScreen", "localQuotes cleared, size is now: " + localQuotes.size)
-                                LocalQuoteManager.saveQuotes(context, localQuotes)
-                            } else
-                                Log.d("MainScreen", "localQuotes is already empty...")
-                        }
-                    ) {
-                        Text("Clear Local Quotes")
-                    }
-
-                    Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
-
-                    Button(modifier = Modifier,
-                        onClick = {
-                            localQuotes.forEach { quote ->
-                                Log.d("MainScreen", "LocalQuotes : ${quote.quote}, Author: ${quote.author}")
-                            }
-                            if(localQuotes.isEmpty())
-                                Log.d("MainScreen", "localQuotes is empty...")
-                        }
-                    ) {
-                        Text("Get Local Quotes")
-                    }
-                }
-                Row {
-                    Button(onClick = { navController.navigate("favorites") }) {
-                        Text("Go to Favorites")
-                    }
-                }
-
-            } // Debug Buttons
+            // DEBUG BUTTONS //
+            DebugButton(coroutineScope, allQuotes, localQuotes, context, verticalPagerState)
+            // DEBUG BUTTONS //
 
 
             Box(
@@ -542,3 +455,99 @@ fun TooTopButton(pagerState: PagerState, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun DebugButton(
+    coroutineScope: CoroutineScope,
+    allQuotes: List<Quote>,
+    localQuotes: SnapshotStateList<Quote>,
+    context: Context,
+    verticalPagerState: PagerState,
+    modifier: Modifier = Modifier
+){
+    Column {
+        Row {
+
+            Button(
+                onClick = {
+                    FavoritesManager.getFavorites()
+                },
+                modifier = Modifier
+
+            ) {
+                Text("Get Favorites")
+            }
+
+            Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
+
+            Button(
+                onClick = {
+                    FavoritesManager.clearFavorites()
+                },
+                modifier = Modifier
+
+            ) {
+                Text("Clear Favorites")
+            }
+
+            Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
+
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        // Call scroll to on pagerState
+                        verticalPagerState.scrollToPage(allQuotes.lastIndex - 1)
+                    }
+                })
+            {
+                Text("2nd to last")
+            }
+        }
+
+        Row {
+            Button(
+                onClick = {
+                    allQuotes.forEach { quote ->
+                        Log.d("MainScreen", "MainScreen: ${quote.quote}, Author: ${quote.author}")
+                    }
+                    Log.d("MainScreen", "MainScreen: " + allQuotes.size)
+                })
+            {
+                Text("Get Quotes")
+            }
+
+            Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
+
+            Button(
+                onClick = {
+
+                    if(!localQuotes.isEmpty()){
+                        localQuotes.clear()
+                        Log.d("MainScreen", "localQuotes cleared, size is now: " + localQuotes.size)
+                        LocalQuoteManager.saveQuotes(context, localQuotes)
+                    } else
+                        Log.d("MainScreen", "localQuotes is already empty...")
+                }
+            ) {
+                Text("Clear Local Quotes")
+            }
+
+            Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
+
+            Button(modifier = Modifier,
+                onClick = {
+                    localQuotes.forEach { quote ->
+                        Log.d("MainScreen", "LocalQuotes : ${quote.quote}, Author: ${quote.author}")
+                    }
+                    if(localQuotes.isEmpty())
+                        Log.d("MainScreen", "localQuotes is empty...")
+                }
+            ) {
+                Text("Get Local Quotes")
+            }
+        }
+        Row {
+
+        }
+
+    }
+}
