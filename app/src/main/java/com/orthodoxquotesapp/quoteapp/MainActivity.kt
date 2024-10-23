@@ -49,6 +49,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -112,9 +113,6 @@ fun MainScreen(
     var isLoading by remember { mutableStateOf(true) } // Loading state for Firestore quotes
     val allQuotes = remember { mutableStateListOf<Quote>() }
 
-    val coroutineScope = rememberCoroutineScope() // For a debug button
-
-
     LaunchedEffect(Unit) {
 
         // Load local quotes from SharedPreferences
@@ -147,7 +145,7 @@ fun MainScreen(
         onComplete()
     } // Splashscreen conditions
 
-    var selectedTabIndex by remember { mutableStateOf(0) }
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
     val tabItems = listOf(
         TabItem("Home"),
         TabItem("Favorites")
@@ -204,7 +202,7 @@ fun MainScreen(
             }
 
             // DEBUG BUTTONS //
-            DebugButton(coroutineScope, allQuotes, localQuotes, context, verticalPagerState)
+            DebugButton(allQuotes, localQuotes, context)
             // DEBUG BUTTONS //
 
 
@@ -457,12 +455,9 @@ fun TooTopButton(pagerState: PagerState, modifier: Modifier = Modifier) {
 
 @Composable
 fun DebugButton(
-    coroutineScope: CoroutineScope,
     allQuotes: List<Quote>,
     localQuotes: SnapshotStateList<Quote>,
     context: Context,
-    verticalPagerState: PagerState,
-    modifier: Modifier = Modifier
 ){
     Column {
         Row {
@@ -493,19 +488,6 @@ fun DebugButton(
 
             Button(
                 onClick = {
-                    coroutineScope.launch {
-                        // Call scroll to on pagerState
-                        verticalPagerState.scrollToPage(allQuotes.lastIndex - 1)
-                    }
-                })
-            {
-                Text("2nd to last")
-            }
-        }
-
-        Row {
-            Button(
-                onClick = {
                     allQuotes.forEach { quote ->
                         Log.d("MainScreen", "MainScreen: ${quote.quote}, Author: ${quote.author}")
                     }
@@ -514,9 +496,9 @@ fun DebugButton(
             {
                 Text("Get Quotes")
             }
+        }
 
-            Spacer(modifier = Modifier.width(4.dp)) // Add some space between the buttons
-
+        Row {
             Button(
                 onClick = {
 
