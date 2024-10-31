@@ -1,6 +1,7 @@
 package com.orthodoxquotesapp.quoteapp
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -341,21 +343,20 @@ fun FavoriteIconButton(quote: Quote) {
 
 @Composable
 fun ShareIconButton(quote: Quote){
-    val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
+    val shareText = "\"${quote.quote}\" - ${quote.author}" // Format the quote and author
 
-    IconButton(
-        onClick = {
-            // Create the text to copy
-            val textToCopy = "\"${quote.quote}\"\n- ${quote.author}"
-            // Copy the text to clipboard
-            clipboardManager.setText(AnnotatedString(textToCopy))
-            Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
+    IconButton(onClick = {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            type = "text/plain"
         }
-    ) {
+        context.startActivity(Intent.createChooser(sendIntent, null))
+    }) {
         Icon(
-            imageVector = Icons.Default.ContentCopy,
-            contentDescription = "Copy quote",
+            imageVector = Icons.Default.Share,
+            contentDescription = "Share",
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(24.dp)
         )
