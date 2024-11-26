@@ -12,8 +12,8 @@ android {
         applicationId = "com.orthodoxquotesapp.quoteapp"
         minSdk = 28 // default 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.01"
+        versionCode = 3
+        versionName = "1.02"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -77,4 +77,5 @@ dependencies {
     implementation(libs.androidx.material.icons.extended) // Use the latest version
     implementation(libs.gson)  // This adds Gson to your project
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.work.runtime.ktx)
 }

@@ -1,5 +1,6 @@
 package com.orthodoxquotesapp.quoteapp
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -36,14 +37,22 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.ImportContacts
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.ImportContacts
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -56,6 +65,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -93,11 +103,33 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             QuoteAppTheme {
-                val navController = rememberNavController() // Create navController here
+                val navController = rememberNavController()
 
-                Navigation(navController = navController, onComplete = { isQuotesLoaded = true })
+                Navigation(
+                    navController = navController,
+                    onComplete = { isQuotesLoaded = true }
+                )
             }
         }
+    }
+}
+
+
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    NavigationBar {
+        NavigationBarItem(
+            selected = true,
+            onClick = {},
+            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+            label = { Text("Home") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = {},
+            icon = { Icon(Icons.Default.Favorite, contentDescription = "Favorites") },
+            label = { Text("Favorites") }
+        )
     }
 }
 
@@ -173,81 +205,90 @@ fun MainScreen(
     }
 
     MaterialTheme {
-        Box(modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .windowInsetsPadding(WindowInsets.statusBars)
-        ) {
+        Scaffold(
+            bottomBar = {
+                BottomNavigationBar(navController)
+            }
+        ){ paddingValues ->
+            Box(modifier = modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .windowInsetsPadding(WindowInsets.statusBars)
+            ) {
 
-            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-                when (page) {
-                    0 -> {
-                        // VerticalPager for quotes
-                        VerticalPager(
-                            state = verticalPagerState,
-                            userScrollEnabled = true,
-                        ) { verticalPage ->
-                            QuoteCard(quote = allQuotes[verticalPage], modifier = Modifier.fillMaxSize())
+                // Handles the screens and navigation between them
+                HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+                    when (page) {
+                        0 -> {
+                            // VerticalPager for quotes
+                            VerticalPager(
+                                state = verticalPagerState,
+                                userScrollEnabled = true,
+                            ) { verticalPage ->
+                                QuoteCard(quote = allQuotes[verticalPage], modifier = Modifier.fillMaxSize())
+                            }
+                        }
+                        1 -> {
+                            // Your Favorites screen placeholder
+                            FavoritesScreen(
+                                navController,
+                                pagerState = favoritesPagerState
+                            )
                         }
                     }
-                    1 -> {
-                        // Your Favorites screen placeholder
-                        FavoritesScreen(
-                            navController,
-                            pagerState = favoritesPagerState
+                }
+
+                // Tab navigation bar
+                TabRow(
+                    selectedTabIndex = selectedTabIndex
+                ) {
+                    tabItems.forEachIndexed { index, item ->
+                        Tab(
+                            selected = selectedTabIndex == index,
+                            onClick = { selectedTabIndex = index },
+                            text = { Text(item.title) },
                         )
                     }
                 }
-            }
 
-            TabRow(
-                selectedTabIndex = selectedTabIndex
-            ) {
-                tabItems.forEachIndexed { index, item ->
-                    Tab(
-                        selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
-                        text = { Text(item.title) },
-                    )
-                }
-            }
+                // DEBUG BUTTONS //
+                //DebugButtons(allQuotes, localQuotes, context)
+                // DEBUG BUTTONS //
 
-            // DEBUG BUTTONS //
-            //DebugButtons(allQuotes, localQuotes, context)
-            // DEBUG BUTTONS //
-
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = 8.dp)
-            ) {
-                AddQuoteButton(
-                    { newQuote ->
-                    // Add the new quote to the quotes list
-                        localQuotes.add(newQuote)
-                        allQuotes.add(newQuote)
-                        LocalQuoteManager.saveQuotes(context, localQuotes)
-
-
-                        Log.d("AddButton", "New Quote Added...")
-                        Log.d("AddButton", "New quotes size: " + quotes.size)
-                        quotes.forEach { quote ->
-                            Log.d("AddButton", "AddButton: ${quote.quote}, Author: ${quote.author}")
-                        }
-
-                    }, modifier = Modifier
-                    .align(Alignment.BottomEnd) // Align this button at the bottom right
-                    .padding(end = 8.dp))// Add some padding from the edges)
-
-                TooTopButton(
-                    pagerState = if (selectedTabIndex == 0) verticalPagerState else favoritesPagerState,
+                // TooTop and AddQuote Buttons
+                Box(
                     modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(start = 8.dp)
-                )
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .padding(bottom = 8.dp)
+                ) {
+                    AddQuoteButton(
+                        { newQuote ->
+                            // Add the new quote to the quotes list
+                            localQuotes.add(newQuote)
+                            allQuotes.add(newQuote)
+                            LocalQuoteManager.saveQuotes(context, localQuotes)
 
+
+                            Log.d("AddButton", "New Quote Added...")
+                            Log.d("AddButton", "New quotes size: " + quotes.size)
+                            quotes.forEach { quote ->
+                                Log.d("AddButton", "AddButton: ${quote.quote}, Author: ${quote.author}")
+                            }
+
+                        }, modifier = Modifier
+                            .align(Alignment.BottomEnd) // Align this button at the bottom right
+                            .padding(end = 8.dp))// Add some padding from the edges)
+
+                    TooTopButton(
+                        pagerState = if (selectedTabIndex == 0) verticalPagerState else favoritesPagerState,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(start = 8.dp)
+                    )
+
+                }
             }
         }
     }
@@ -362,7 +403,6 @@ fun ShareIconButton(quote: Quote){
         )
     }
 }
-
 
 @Composable
 fun AddQuoteButton(onAddQuote: (Quote) -> Unit, modifier: Modifier = Modifier) {
