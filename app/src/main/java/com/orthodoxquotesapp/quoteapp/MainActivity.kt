@@ -33,6 +33,8 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
@@ -40,9 +42,12 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ImportContacts
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.ImportContacts
+import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
@@ -78,6 +83,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 import com.orthodoxquotesapp.quoteapp.dataclasses.TabItem
@@ -97,39 +103,92 @@ class MainActivity : ComponentActivity() {
 
         var isQuotesLoaded by mutableStateOf(false)
 
-        // Incorporate the splash screen
-        installSplashScreen().setKeepOnScreenCondition{ !isQuotesLoaded }
+        installSplashScreen().setKeepOnScreenCondition { !isQuotesLoaded }
         enableEdgeToEdge()
 
         setContent {
             QuoteAppTheme {
                 val navController = rememberNavController()
 
-                Navigation(
-                    navController = navController,
-                    onComplete = { isQuotesLoaded = true }
-                )
+                // Scaffold with persistent BottomNavigationBar
+                Scaffold(
+                    bottomBar = {
+                        BottomNavigationBar(navController, bottomNavBarItems)
+                    }
+                ) { paddingValues ->
+                    Box(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize()
+                    ) {
+                        Navigation(
+                            navController = navController,
+                            onComplete = { isQuotesLoaded = true }
+                        )
+                    }
+                }
             }
         }
     }
 }
 
+var bottomNavBarItems = listOf(
+    BottomNavigationItem(
+        title = "Home",
+        selectedIcon = Icons.Filled.Home,
+        unselectedIcon = Icons.Outlined.Home
+    ),
+    BottomNavigationItem(
+        title = "Readings",
+        selectedIcon = Icons.AutoMirrored.Filled.MenuBook,
+        unselectedIcon = Icons.Outlined.Book
+    ),
+)
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
-    NavigationBar {
-        NavigationBarItem(
-            selected = true,
-            onClick = {},
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = {},
-            icon = { Icon(Icons.Default.Favorite, contentDescription = "Favorites") },
-            label = { Text("Favorites") }
-        )
+fun BottomNavigationBar(navController: NavController, bottomNavBarItems: List<BottomNavigationItem>) {
+    // Get the current route from the navController
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    // Track selected item based on the current route
+    var selectedIndex by rememberSaveable { mutableStateOf(0) } // Default to index 0
+
+    // Find the index of the currently active screen
+    bottomNavBarItems.forEachIndexed { index, item ->
+        if (item.title == currentRoute) {
+            selectedIndex = index // Update the selected index if current route matches the title
+        }
+    }
+
+    // Build the NavigationBar
+    NavigationBar (
+        modifier = Modifier
+            .height(70.dp)
+    ){
+        bottomNavBarItems.forEachIndexed { index, item ->
+            NavigationBarItem(
+                selected = selectedIndex == index,
+                onClick = {
+                    if (selectedIndex != index) {
+                        selectedIndex = index
+                        navController.navigate(item.title) {
+                            // Prevent multiple copies of the same destination in the back stack
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = if (selectedIndex == index) item.selectedIcon else item.unselectedIcon,
+                        contentDescription = item.title,
+                        modifier = Modifier
+                            /*.size(24.dp)*/
+                            //.padding(top = 16.dp)
+                    )
+                },
+                label = { Text(item.title) }
+            )
+        }
     }
 }
 
@@ -206,9 +265,9 @@ fun MainScreen(
 
     MaterialTheme {
         Scaffold(
-            bottomBar = {
-                BottomNavigationBar(navController)
-            }
+//            bottomBar = {
+//                BottomNavigationBar(navController, bottomNavBarItems)
+//            }
         ){ paddingValues ->
             Box(modifier = modifier
                 .padding(paddingValues)
