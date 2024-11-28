@@ -2,8 +2,10 @@ package com.orthodoxquotesapp.quoteapp
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,8 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -43,26 +51,44 @@ fun ReadingsScreen(navController: NavController) {
         modifier = Modifier.padding(8.dp) // Add some padding if needed
     ) {
         items(calendarData) { calendarDay ->
-            calendarDay.readings?.forEach { reading ->
-                ReadingItem(reading)
+            calendarDay.readings?.forEachIndexed { index, reading ->
+                ReadingItem(reading, index)
+
+                // Add space only between items, not after the last item
+                if (index < calendarDay.readings.size - 1) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
     }
 }
 
 @Composable
-fun ReadingItem(reading: Reading) {
+fun ReadingItem(reading: Reading, index: Int) {
     Column(modifier = Modifier.padding(8.dp)) {
         // Display book and short display
 
-        val originalReference = reading.short_display
-        val reference         = originalReference.replace(".", ":")
+        val readingType: String
+
+        if (index == 0) { // Add parentheses around the condition
+            readingType = "Epistle"
+        } else {
+            readingType = "Gospel"
+        }
+
+
+        val originalReference = "${reading.short_display} (KJV) (${readingType})"
+        val reference = originalReference.replace(".", ":")
 
         Text(
             reference,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Concatenate all passage contents into a single string
         val passagesText = reading.passage.joinToString(separator = " ") { passage ->
@@ -74,16 +100,11 @@ fun ReadingItem(reading: Reading) {
             passagesText,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Justify,
+            fontSize = 16.sp,
             modifier = Modifier.fillMaxWidth()
         )
     }
 }
 
 
-@Composable
-fun PassageItem(passage: Passage) {
-    Column(modifier = Modifier.padding(start = 16.dp)) {
-        // Display each passage's content
-        Text(passage.content)
-    }
-}
+
