@@ -1,5 +1,6 @@
 [versions]
 agp = "8.6.1"
+converterGson = "2.9.0"
 coreSplashscreen = "1.0.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -15,6 +16,7 @@ materialIconsExtended = "1.5.0"
 
 gson = "2.10.1"
 navigationCompose = "2.8.3"
+retrofit = "2.9.0"
 workRuntimeKtx = "2.7.1"
 
 [libraries]
@@ -23,6 +25,8 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -39,6 +43,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

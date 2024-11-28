@@ -17,8 +17,8 @@ fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
     NavHost(navController = navController, startDestination = "home") {
         composable(
             "home",
-            enterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
-            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
+//            enterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+//            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
             ) {
             MainScreen(
                 onComplete = onComplete,

@@ -78,4 +78,10 @@ dependencies {
     implementation(libs.gson)  // This adds Gson to your project
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.work.runtime.ktx)
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.converter.scalars)
+
+
 }

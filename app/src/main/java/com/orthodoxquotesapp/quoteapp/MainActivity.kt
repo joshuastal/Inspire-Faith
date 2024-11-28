@@ -80,6 +80,9 @@ import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.LocalQuoteManage
 import com.orthodoxquotesapp.quoteapp.theme.QuoteAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+
+
 
 
 class MainActivity : ComponentActivity() {
@@ -93,6 +96,11 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen().setKeepOnScreenCondition { !isQuotesLoaded }
         enableEdgeToEdge()
+
+        // RETROFIT
+
+        // RETROFIT
+
 
         setContent {
             QuoteAppTheme {
