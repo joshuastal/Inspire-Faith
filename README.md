@@ -5,6 +5,8 @@
 
  The application retrieves the quotes from a Firestore databs. It also allows users to favorite and unfavorite specific quotes, display only favorite quotes, and even add their own local quotes should the user so desire.
 
+ NEW: Added a daily readings feature so that the user can read the daily epistle and gospel reading in app!
+
  Desired, but not guaranteed features: 
  1) A search function for users to search for a specific quote
  2) A remove button that removes local quotes (potential to remove database quotes on a local level)
