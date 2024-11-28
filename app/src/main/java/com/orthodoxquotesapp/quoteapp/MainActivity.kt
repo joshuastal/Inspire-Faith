@@ -1,11 +1,9 @@
 package com.orthodoxquotesapp.quoteapp
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,40 +14,30 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.ImportContacts
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.ImportContacts
-import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -75,9 +63,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,6 +72,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.orthodoxquotesapp.quoteapp.dataclasses.BottomNavigationItem
 import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 import com.orthodoxquotesapp.quoteapp.dataclasses.TabItem
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.FavoritesManager
@@ -113,7 +101,10 @@ class MainActivity : ComponentActivity() {
                 // Scaffold with persistent BottomNavigationBar
                 Scaffold(
                     bottomBar = {
-                        BottomNavigationBar(navController, bottomNavBarItems)
+                        BottomNavigationBar(navController, bottomNavBarItems, modifier =
+                        Modifier
+                            .clip(RoundedCornerShape(25.dp))
+                        )
                     }
                 ) { paddingValues ->
                     Box(
@@ -146,7 +137,7 @@ var bottomNavBarItems = listOf(
 )
 
 @Composable
-fun BottomNavigationBar(navController: NavController, bottomNavBarItems: List<BottomNavigationItem>) {
+fun BottomNavigationBar(navController: NavController, bottomNavBarItems: List<BottomNavigationItem>, modifier: Modifier = Modifier) {
     // Get the current route from the navController
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     // Track selected item based on the current route
@@ -160,10 +151,7 @@ fun BottomNavigationBar(navController: NavController, bottomNavBarItems: List<Bo
     }
 
     // Build the NavigationBar
-    NavigationBar (
-        modifier = Modifier
-            .height(70.dp)
-    ){
+    NavigationBar (modifier = modifier) {
         bottomNavBarItems.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedIndex == index,
@@ -182,8 +170,6 @@ fun BottomNavigationBar(navController: NavController, bottomNavBarItems: List<Bo
                         imageVector = if (selectedIndex == index) item.selectedIcon else item.unselectedIcon,
                         contentDescription = item.title,
                         modifier = Modifier
-                            /*.size(24.dp)*/
-                            //.padding(top = 16.dp)
                     )
                 },
                 label = { Text(item.title) }
@@ -264,18 +250,6 @@ fun MainScreen(
     }
 
     MaterialTheme {
-        Scaffold(
-//            bottomBar = {
-//                BottomNavigationBar(navController, bottomNavBarItems)
-//            }
-        ){ paddingValues ->
-            Box(modifier = modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .windowInsetsPadding(WindowInsets.statusBars)
-            ) {
-
                 // Handles the screens and navigation between them
                 HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
                     when (page) {
@@ -319,8 +293,7 @@ fun MainScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = 10.dp)
                 ) {
                     AddQuoteButton(
                         { newQuote ->
@@ -338,7 +311,8 @@ fun MainScreen(
 
                         }, modifier = Modifier
                             .align(Alignment.BottomEnd) // Align this button at the bottom right
-                            .padding(end = 8.dp))// Add some padding from the edges)
+                            .padding(end = 8.dp)
+                    )
 
                     TooTopButton(
                         pagerState = if (selectedTabIndex == 0) verticalPagerState else favoritesPagerState,
@@ -346,9 +320,6 @@ fun MainScreen(
                             .align(Alignment.BottomStart)
                             .padding(start = 8.dp)
                     )
-
-                }
-            }
         }
     }
 }
@@ -380,7 +351,7 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
-                        fontSize = 24.sp,
+                        fontSize = 23.sp,
                         lineHeight = 32.sp,
                         modifier = Modifier.padding(top = 10.dp)
                     )

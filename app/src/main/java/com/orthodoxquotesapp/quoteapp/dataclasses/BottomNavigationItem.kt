@@ -1,4 +1,4 @@
-package com.orthodoxquotesapp.quoteapp
+package com.orthodoxquotesapp.quoteapp.dataclasses
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -7,3 +7,5 @@ data class BottomNavigationItem(
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
 )
+
+
