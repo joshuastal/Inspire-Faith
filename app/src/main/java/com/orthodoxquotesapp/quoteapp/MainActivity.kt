@@ -128,14 +128,14 @@ class MainActivity : ComponentActivity() {
 
 var bottomNavBarItems = listOf(
     BottomNavigationItem(
-        title = "Home",
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home
-    ),
-    BottomNavigationItem(
         title = "Readings",
         selectedIcon = Icons.AutoMirrored.Filled.MenuBook,
         unselectedIcon = Icons.Outlined.Book
+    ),
+    BottomNavigationItem(
+        title = "Home",
+        selectedIcon = Icons.Filled.Home,
+        unselectedIcon = Icons.Outlined.Home
     ),
     BottomNavigationItem(
         title = "Saints",
@@ -153,7 +153,7 @@ fun BottomNavigationBar(
     // Get the current route from the navController
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     // Track selected item based on the current route
-    var selectedIndex by rememberSaveable { mutableStateOf(0) } // Default to index 0
+    var selectedIndex by rememberSaveable { mutableStateOf(1) } // Default to index 0
 
     // Find the index of the currently active screen
     bottomNavBarItems.forEachIndexed { index, item ->
