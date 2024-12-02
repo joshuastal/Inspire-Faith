@@ -11,6 +11,8 @@
  
  Daily Epistle & Gospel Readings!
 
+
+
  Desired, but not guaranteed features: 
  1) A search function for users to search for a specific quote
  2) A remove button that removes local quotes (potential to remove database quotes on a local level)
