@@ -5,7 +5,7 @@
 
  The application retrieves the quotes from a Firestore database. It also allows users to favorite and unfavorite specific quotes, display only favorite quotes, and even add their own local quotes should the user so desire.
 
- NEW! Daily Saint commemoration & story as well as other notable figures! Daily Epistle & Gospel Readings!
+ **NEW!** Daily Saint commemoration & story as well as other notable figures! Daily Epistle & Gospel Readings!
 
 
 
