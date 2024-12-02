@@ -53,7 +53,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -84,9 +83,6 @@ import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.LocalQuoteManage
 import com.orthodoxquotesapp.quoteapp.theme.QuoteAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-
-
 
 
 class MainActivity : ComponentActivity() {
@@ -100,11 +96,6 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen().setKeepOnScreenCondition { !isQuotesLoaded }
         enableEdgeToEdge()
-
-        // RETROFIT
-
-        // RETROFIT
-
 
         setContent {
             QuoteAppTheme {
@@ -154,7 +145,11 @@ var bottomNavBarItems = listOf(
 )
 
 @Composable
-fun BottomNavigationBar(navController: NavController, bottomNavBarItems: List<BottomNavigationItem>, modifier: Modifier = Modifier) {
+fun BottomNavigationBar(
+    navController: NavController,
+    bottomNavBarItems: List<BottomNavigationItem>,
+    modifier: Modifier = Modifier
+) {
     // Get the current route from the navController
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     // Track selected item based on the current route
@@ -200,7 +195,6 @@ fun MainScreen(
     onComplete: () -> Unit,
     navController: NavController,
     favoritesPagerState: PagerState,
-    modifier: Modifier = Modifier
 ) {
 
     // UTILITIES
@@ -282,7 +276,6 @@ fun MainScreen(
                         1 -> {
                             // Your Favorites screen placeholder
                             FavoritesScreen(
-                                navController,
                                 pagerState = favoritesPagerState
                             )
                         }

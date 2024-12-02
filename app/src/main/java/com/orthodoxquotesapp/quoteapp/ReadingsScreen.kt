@@ -1,43 +1,25 @@
 package com.orthodoxquotesapp.quoteapp
 
 import android.util.Log
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.orthodoxquotesapp.quoteapp.retrofit_things.CalendarViewModel
-import com.orthodoxquotesapp.quoteapp.retrofit_things.Passage
 import com.orthodoxquotesapp.quoteapp.retrofit_things.Reading
 
 @Composable
@@ -57,8 +39,8 @@ fun ReadingsScreen() {
         modifier = Modifier.padding(8.dp) // Add some padding if needed
     ) {
         items(calendarData) { calendarDay ->
-            calendarDay.readings?.forEachIndexed { index, reading ->
-                ReadingItem(reading, index)
+            calendarDay.readings.forEachIndexed { index, reading ->
+                ReadingItem(reading)
 
                 // Add space only between items, not after the last item
                 if (index < calendarDay.readings.size - 1) {
@@ -72,7 +54,7 @@ fun ReadingsScreen() {
 }
 
 @Composable
-fun ReadingItem(reading: Reading, index: Int) {
+fun ReadingItem(reading: Reading) {
     Column(modifier = Modifier.padding(8.dp)) {
         // Display book and short display
 
