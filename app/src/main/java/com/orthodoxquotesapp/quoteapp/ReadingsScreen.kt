@@ -1,5 +1,6 @@
 package com.orthodoxquotesapp.quoteapp
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,7 +41,7 @@ import com.orthodoxquotesapp.quoteapp.retrofit_things.Passage
 import com.orthodoxquotesapp.quoteapp.retrofit_things.Reading
 
 @Composable
-fun ReadingsScreen(navController: NavController) {
+fun ReadingsScreen() {
     val calendarViewModel: CalendarViewModel = viewModel()
 
     // Fetch calendar data when the Composable is first launched
@@ -49,6 +50,8 @@ fun ReadingsScreen(navController: NavController) {
     }
 
     val calendarData = calendarViewModel.calendarData.value
+
+
 
     LazyColumn(
         modifier = Modifier.padding(8.dp) // Add some padding if needed
@@ -62,6 +65,8 @@ fun ReadingsScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
+            Log.d("Saints", "Stories: ${calendarDay.stories}") // Returns a list of Stories
+            Log.d("Saints", "Saints: ${calendarDay.saints}") // Returns a list of Saints who's indexes correspond to the story index
         }
     }
 }

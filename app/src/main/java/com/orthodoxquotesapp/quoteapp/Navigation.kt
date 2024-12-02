@@ -30,7 +30,10 @@ fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
             FavoritesScreen(navController, favoritesPagerState)
         }
         composable("readings") {
-            ReadingsScreen(navController)
+            ReadingsScreen()
+        }
+        composable("saints") {
+            SaintsScreen()
         }
     }
 }

@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -145,6 +146,11 @@ var bottomNavBarItems = listOf(
         selectedIcon = Icons.AutoMirrored.Filled.MenuBook,
         unselectedIcon = Icons.Outlined.Book
     ),
+    BottomNavigationItem(
+        title = "Saints",
+        selectedIcon = Icons.Filled.Person,
+        unselectedIcon = Icons.Outlined.Person
+    )
 )
 
 @Composable
