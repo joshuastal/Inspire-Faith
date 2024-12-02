@@ -49,7 +49,7 @@ fun SaintItem(story: Story) {
     Column(modifier = Modifier.padding(8.dp)) {
 
         // Display saint name
-        val wordsToRemove = listOf("Our", "Venerable")
+        val wordsToRemove = listOf("Our", "Venerable", "Holy", )
         val storyTitle = story.title
             .split(" ")
             .filterNot { word -> wordsToRemove.contains(word) }
@@ -61,7 +61,10 @@ fun SaintItem(story: Story) {
                 .replace("Father", "Fr."),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
-            fontSize = if(storyTitle.length > 50) 19.sp else 21.sp,
+            fontSize =
+                if(storyTitle.length in 52..59) 18.sp
+                else 21.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -74,7 +77,7 @@ fun SaintItem(story: Story) {
         )
 
         // Display story
-        Log.d("Story", "Stories: ${story.story}") // Returns a list of Stories
+        Log.d("StoryTitle", "${storyTitle}: ${storyTitle.length}") // Returns a list of Stories
         DisplayStory(story.story)
     }
 }
