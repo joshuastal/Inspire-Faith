@@ -14,6 +14,8 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
@@ -68,27 +71,30 @@ fun ReadingItem(reading: Reading, index: Int) {
     Column(modifier = Modifier.padding(8.dp)) {
         // Display book and short display
 
-        val readingType: String
 
-        if (index == 0) { // Add parentheses around the condition
-            readingType = "Epistle"
-        } else {
-            readingType = "Gospel"
-        }
+        val gospels = listOf("Matthew", "Mark", "Luke", "John")
+
+        val readingType = if (reading.book in gospels) "Gospel" else "Epistle"
 
 
-        val originalReference = "${reading.short_display} (KJV) (${readingType})"
+
+        val originalReference = "${reading.display} (KJV) (${readingType})"
         val reference = originalReference.replace(".", ":")
 
         Text(
             reference,
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
+            fontSize = 20.sp,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            thickness = 1.dp
+        )
 
         // Concatenate all passage contents into a single string
         val passagesText = reading.passage.joinToString(separator = " ") { passage ->
@@ -98,9 +104,9 @@ fun ReadingItem(reading: Reading, index: Int) {
         // Display all passages as a single block of text
         Text(
             passagesText,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 28.sp),
             textAlign = TextAlign.Justify,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             modifier = Modifier.fillMaxWidth()
         )
     }

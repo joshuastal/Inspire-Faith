@@ -32,8 +32,10 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.FormatQuote
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Home
@@ -45,6 +47,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -474,19 +477,24 @@ fun AddQuoteButton(onAddQuote: (Quote) -> Unit, modifier: Modifier = Modifier) {
             title = { Text("Add Quote") },
             text = {
                 Column {
-                    TextField(
+                    OutlinedTextField(
                         value = author,
                         onValueChange = { author = it },
-                        label = { Text("Author") }
+                        label = { Text("Author") },
+                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Author") },
+                        placeholder = { Text("Enter author") }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
+                    OutlinedTextField(
                         value = quote,
                         onValueChange = { quote = it },
-                        label = { Text("Quote") }
+                        label = { Text("Quote") },
+                        leadingIcon = { Icon(Icons.Default.FormatQuote, contentDescription = "Quote") },
+                        placeholder = { Text("Enter a quote") }
                     )
                 }
             },
+            shape = RoundedCornerShape(20.dp),
             confirmButton = {
                 Button(
                     onClick = {

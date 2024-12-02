@@ -24,6 +24,7 @@ class CalendarViewModel : ViewModel() {
                     // Use an empty list if response body is null
                     _calendarData.value = response.body()?.let { listOf(it) } ?: emptyList()
                     Log.d("API Response", "Calendar Data: ${_calendarData.value}")
+
                 } else {
                     Log.e("API Error", "Error fetching data: ${response.message()}")
                 }
