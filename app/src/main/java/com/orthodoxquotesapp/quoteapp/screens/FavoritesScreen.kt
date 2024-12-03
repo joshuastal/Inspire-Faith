@@ -1,4 +1,4 @@
-package com.orthodoxquotesapp.quoteapp
+package com.orthodoxquotesapp.quoteapp.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

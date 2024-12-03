@@ -1,4 +1,4 @@
-package com.orthodoxquotesapp.quoteapp
+package com.orthodoxquotesapp.quoteapp.screens
 
 import android.content.Context
 import android.content.Intent
@@ -33,11 +33,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FormatQuote
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Book
+import androidx.compose.material.icons.outlined.FormatQuote
+import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
@@ -69,12 +72,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.orthodoxquotesapp.quoteapp.FirebaseService
+import com.orthodoxquotesapp.quoteapp.Navigation
+import com.orthodoxquotesapp.quoteapp.QuoteService
 import com.orthodoxquotesapp.quoteapp.dataclasses.BottomNavigationItem
 import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 import com.orthodoxquotesapp.quoteapp.dataclasses.TabItem
@@ -133,14 +140,15 @@ var bottomNavBarItems = listOf(
         unselectedIcon = Icons.Outlined.Book
     ),
     BottomNavigationItem(
-        title = "Home",
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home
+        title = "Quotes",
+        selectedIcon = Icons.Filled.FormatQuote,
+        selectedIconSize = 24.dp,
+        unselectedIcon = Icons.Outlined.FormatQuote,
     ),
     BottomNavigationItem(
         title = "Saints",
-        selectedIcon = Icons.Filled.Person,
-        unselectedIcon = Icons.Outlined.Person
+        selectedIcon = Icons.Filled.Group,
+        unselectedIcon = Icons.Outlined.Group
     )
 )
 
@@ -178,11 +186,25 @@ fun BottomNavigationBar(
                     }
                 },
                 icon = {
-                    Icon(
-                        imageVector = if (selectedIndex == index) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.title,
+                    val isSelected = selectedIndex == index
+                    val size = if (isSelected) item.selectedIconSize else item.unselectedIconSize
+                    val adjustedSize = if (isSelected) {
+                        size * 1.2f // Scale up the filled icon slightly
+                    } else {
+                        size
+                    }
+                    val containerSize = 30.dp // Fixed size for the container
+                    Box(
                         modifier = Modifier
-                    )
+                            .size(containerSize),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
+                            contentDescription = item.title,
+                            modifier = if (size != Dp.Unspecified) Modifier.size(adjustedSize) else Modifier
+                        )
+                    }
                 },
                 label = { Text(item.title) }
             )

@@ -16,7 +16,7 @@
         android:windowSoftInputMode="adjustResize"
         tools:targetApi="31">
         <activity
-            android:name="com.orthodoxquotesapp.quoteapp.MainActivity"
+            android:name="com.orthodoxquotesapp.quoteapp.screens.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>

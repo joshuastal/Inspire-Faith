@@ -12,8 +12,8 @@ android {
         applicationId = "com.orthodoxquotesapp.quoteapp"
         minSdk = 28 // default 24
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.03"
+        versionCode = 5
+        versionName = "1.04"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

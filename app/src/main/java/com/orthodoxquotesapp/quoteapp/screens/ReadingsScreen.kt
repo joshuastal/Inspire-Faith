@@ -1,4 +1,4 @@
-package com.orthodoxquotesapp.quoteapp
+package com.orthodoxquotesapp.quoteapp.screens
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -69,10 +69,11 @@ fun ReadingItem(reading: Reading) {
         val reference = originalReference.replace(".", ":")
 
         Text(
-            reference,
+            text = reference,
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
 

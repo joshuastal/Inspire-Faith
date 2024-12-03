@@ -5,15 +5,19 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.orthodoxquotesapp.quoteapp.screens.FavoritesScreen
+import com.orthodoxquotesapp.quoteapp.screens.MainScreen
+import com.orthodoxquotesapp.quoteapp.screens.ReadingsScreen
+import com.orthodoxquotesapp.quoteapp.screens.SaintsScreen
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.FavoritesManager
 
 @Composable
 fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
     val favoritesPagerState = rememberPagerState(pageCount = { FavoritesManager.favoriteQuotes.size })
 
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "quotes") {
         composable(
-            "home",
+            "quotes",
 //            enterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
 //            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
             ) {
