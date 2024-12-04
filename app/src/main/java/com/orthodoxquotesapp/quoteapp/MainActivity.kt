@@ -143,6 +143,8 @@ class MainActivity : ComponentActivity() {
             set(Calendar.SECOND, 0)
         }
 
+        Log.d("DailyNotification", "Scheduling alarm for: ${calendar.time}") // Add this log
+
         val intent = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             this,

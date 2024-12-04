@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.orthodoxquotesapp.quoteapp.R
 
@@ -20,6 +21,8 @@ class QuoteNotifier(
     // Create and show the notification
     @SuppressLint("ObsoleteSdkInt")
     fun showNotification() {
+        Log.d("DailyNotification", "Showing notification at: ${System.currentTimeMillis()}")
+
         // Create notification channel for devices with Android Oreo (API 26) or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(

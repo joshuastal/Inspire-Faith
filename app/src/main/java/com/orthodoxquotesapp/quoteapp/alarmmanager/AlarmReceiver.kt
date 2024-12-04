@@ -11,7 +11,8 @@ import com.orthodoxquotesapp.quoteapp.R
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         // Log to ensure this method is called
-        Log.d("AlarmReceiver", "Notification should be triggered!")
+        Log.d("DailyNotification", "Notification triggered at: ${System.currentTimeMillis()}")
+
 
         context?.let {
             val notificationManager =

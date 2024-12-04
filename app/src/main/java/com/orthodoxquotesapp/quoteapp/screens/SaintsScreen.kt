@@ -11,6 +11,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,11 +53,14 @@ fun SaintItem(story: Story) {
     Column(modifier = Modifier.padding(8.dp)) {
 
         // Display saint name
-        val wordsToRemove = listOf("Our", "Venerable", "Holy", )
+        val wordsToRemove = listOf("Our", "Venerable", "Holy", "Righteous" )
         val storyTitle = story.title
             .split(" ")
             .filterNot { word -> wordsToRemove.contains(word) }
             .joinToString(" ")
+
+        var dynamicFontSize by remember { mutableStateOf(21.sp) }
+        var isFontAdjusted by remember { mutableStateOf(false) }
 
         Text(
             text = storyTitle
@@ -61,10 +68,19 @@ fun SaintItem(story: Story) {
                 .replace("Father", "Fr."),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
-            fontSize =
-                if(storyTitle.length in 52..59) 18.sp
-                else 21.sp,
+            fontSize = dynamicFontSize,
             textAlign = TextAlign.Center,
+            onTextLayout = { layoutResult ->
+                if (!isFontAdjusted) {
+                    if (layoutResult.lineCount > 1 && dynamicFontSize != 18.sp) {
+                        dynamicFontSize = 18.sp
+                        isFontAdjusted = true
+                    } else if (layoutResult.lineCount <= 1 && dynamicFontSize != 21.sp) {
+                        dynamicFontSize = 21.sp
+                        isFontAdjusted = true
+                    }
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -87,7 +103,10 @@ fun DisplayStory(story: String) {
     // Replace </p> with a newline, and <p> tags can be removed
     val formattedStory = story
         .replace("</p>", "\n")  // Replace closing paragraph tag with a double newline
-        .replace("<p>", "")      // Remove opening paragraph tag (optional)
+        .replace("<p>", "")
+        .replace("<i>", "")
+        .replace("</i>", "")
+    // Remove opening paragraph tag (optional)
 
     // Split the formatted story into paragraphs based on newlines
     val paragraphs = formattedStory.split("\n") // Paragraphs are now separated by new lines
