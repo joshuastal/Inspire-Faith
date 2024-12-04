@@ -1,5 +1,7 @@
-package com.orthodoxquotesapp.quoteapp.screens
+package com.orthodoxquotesapp.quoteapp
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -34,15 +36,12 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FormatQuote
 import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.FormatQuote
 import androidx.compose.material.icons.outlined.Group
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -79,17 +78,17 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.orthodoxquotesapp.quoteapp.FirebaseService
-import com.orthodoxquotesapp.quoteapp.Navigation
-import com.orthodoxquotesapp.quoteapp.QuoteService
+import com.orthodoxquotesapp.quoteapp.alarmmanager.AlarmReceiver
 import com.orthodoxquotesapp.quoteapp.dataclasses.BottomNavigationItem
 import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 import com.orthodoxquotesapp.quoteapp.dataclasses.TabItem
+import com.orthodoxquotesapp.quoteapp.screens.FavoritesScreen
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.FavoritesManager
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.LocalQuoteManager
 import com.orthodoxquotesapp.quoteapp.theme.QuoteAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 class MainActivity : ComponentActivity() {
@@ -104,11 +103,13 @@ class MainActivity : ComponentActivity() {
         installSplashScreen().setKeepOnScreenCondition { !isQuotesLoaded }
         enableEdgeToEdge()
 
+        scheduleAlarm()
+
         setContent {
             QuoteAppTheme {
                 val navController = rememberNavController()
 
-                // Scaffold with persistent BottomNavigationBar
+                // Scaffold allows for persistent BottomNavigationBar
                 Scaffold(
                     bottomBar = {
                         BottomNavigationBar(navController, bottomNavBarItems, modifier =
@@ -131,8 +132,36 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
+    // Schedule the daily notification
+    private fun scheduleAlarm(){
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 1)
+            set(Calendar.MINUTE, 48)
+            set(Calendar.SECOND, 0)
+        }
+
+        val intent = Intent(this, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        alarmManager.setWindow(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            60000,  // time window (1 minute)
+            pendingIntent
+        )
+    }
 }
 
+
+// Different screens in the app
 var bottomNavBarItems = listOf(
     BottomNavigationItem(
         title = "Readings",
@@ -208,150 +237,6 @@ fun BottomNavigationBar(
                 },
                 label = { Text(item.title) }
             )
-        }
-    }
-}
-
-@Composable
-fun MainScreen(
-    onComplete: () -> Unit,
-    navController: NavController,
-    favoritesPagerState: PagerState,
-) {
-
-    // UTILITIES
-    val firebaseService = FirebaseService()
-    val quoteService = QuoteService()
-    val context = LocalContext.current
-    // UTILITIES
-
-
-    // QUOTES MANAGEMENT
-    val quotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
-    val localQuotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
-    val allQuotes = remember { mutableStateListOf<Quote>() }
-    // QUOTES MANAGEMENT
-
-
-    var isLoading by remember { mutableStateOf(true) } // Loading state for Firestore quotes and splashscreen
-    LaunchedEffect(Unit) {
-
-        // Load local quotes from SharedPreferences
-        val savedQuotes = LocalQuoteManager.getSavedQuotes(context)
-
-        // Ensure no duplicates are added
-        savedQuotes.forEach { savedQuote ->
-            if (!localQuotes.contains(savedQuote)) {
-                localQuotes.add(savedQuote)
-            }
-        }
-
-        // Retrieve quotes asynchronously
-        quoteService.retrieveQuotes(quotes, firebaseService)
-
-        // Wait until quotes are loaded
-        while (quotes.isEmpty()) {
-            delay(1) // Check every 1ms if quotes are loaded
-        }
-
-        // Combine and shuffle quotes only once
-        if (allQuotes.isEmpty()) {
-            allQuotes.addAll(localQuotes + quotes)
-            allQuotes.shuffle()
-        }
-
-        isLoading = false // Remote quotes are loaded, so no more loading state
-
-        // Call onComplete after quotes are loaded
-        onComplete()
-    } // Splashscreen conditions
-
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val tabItems = listOf(
-        TabItem("Home"),
-        TabItem("Favorites")
-    )
-
-    val pagerState = rememberPagerState(pageCount = { tabItems.size })
-    val verticalPagerState = rememberPagerState(pageCount = {allQuotes.size})
-
-    LaunchedEffect(selectedTabIndex){
-        pagerState.animateScrollToPage(selectedTabIndex)
-    }
-    LaunchedEffect(pagerState.currentPage){
-        selectedTabIndex = pagerState.currentPage
-    }
-
-    MaterialTheme {
-                // Handles the screens and navigation between them
-                HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-                    when (page) {
-                        0 -> {
-                            // VerticalPager for quotes
-                            VerticalPager(
-                                state = verticalPagerState,
-                                userScrollEnabled = true,
-                            ) { verticalPage ->
-                                QuoteCard(quote = allQuotes[verticalPage], modifier = Modifier.fillMaxSize())
-                            }
-                        }
-                        1 -> {
-                            // Your Favorites screen placeholder
-                            FavoritesScreen(
-                                pagerState = favoritesPagerState
-                            )
-                        }
-                    }
-                }
-
-                // Tab navigation bar
-                TabRow(
-                    selectedTabIndex = selectedTabIndex
-                ) {
-                    tabItems.forEachIndexed { index, item ->
-                        Tab(
-                            selected = selectedTabIndex == index,
-                            onClick = { selectedTabIndex = index },
-                            text = { Text(item.title) },
-                        )
-                    }
-                }
-
-                // DEBUG BUTTONS //
-                //DebugButtons(allQuotes, localQuotes, context)
-                // DEBUG BUTTONS //
-
-                // TooTop and AddQuote Buttons
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 10.dp)
-                ) {
-                    AddQuoteButton(
-                        { newQuote ->
-                            // Add the new quote to the quotes list
-                            localQuotes.add(newQuote)
-                            allQuotes.add(newQuote)
-                            LocalQuoteManager.saveQuotes(context, localQuotes)
-
-
-                            Log.d("AddButton", "New Quote Added...")
-                            Log.d("AddButton", "New quotes size: " + quotes.size)
-                            quotes.forEach { quote ->
-                                Log.d("AddButton", "AddButton: ${quote.quote}, Author: ${quote.author}")
-                            }
-
-                        }, modifier = Modifier
-                            .align(Alignment.BottomEnd) // Align this button at the bottom right
-                            .padding(end = 8.dp)
-                    )
-
-                    TooTopButton(
-                        pagerState = if (selectedTabIndex == 0) verticalPagerState else favoritesPagerState,
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(start = 8.dp)
-                    )
         }
     }
 }

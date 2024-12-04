@@ -43,6 +43,8 @@ android {
     }
     buildFeatures {
         compose = true
+        dataBinding = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -82,9 +84,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.work.runtime.ktx)
 
+    // For Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.converter.scalars)
 
+    // For AlarmManager
 
 }
