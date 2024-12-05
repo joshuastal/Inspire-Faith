@@ -72,8 +72,8 @@ fun SaintItem(story: Story) {
             textAlign = TextAlign.Center,
             onTextLayout = { layoutResult ->
                 if (!isFontAdjusted) {
-                    if (layoutResult.lineCount > 1 && dynamicFontSize != 18.sp) {
-                        dynamicFontSize = 18.sp
+                    if (layoutResult.lineCount > 1 && dynamicFontSize != 18.5.sp) {
+                        dynamicFontSize = 18.5.sp
                         isFontAdjusted = true
                     } else if (layoutResult.lineCount <= 1 && dynamicFontSize != 21.sp) {
                         dynamicFontSize = 21.sp
