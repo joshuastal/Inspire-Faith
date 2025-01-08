@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.orthodoxquotesapp.quoteapp.screens.FavoritesScreen
-import com.orthodoxquotesapp.quoteapp.screens.MainScreen
+import com.orthodoxquotesapp.quoteapp.screens.QuotesScreen
 import com.orthodoxquotesapp.quoteapp.screens.ReadingsScreen
 import com.orthodoxquotesapp.quoteapp.screens.SaintsScreen
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.FavoritesManager
@@ -21,7 +21,7 @@ fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
 //            enterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
 //            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
             ) {
-            MainScreen(
+            QuotesScreen(
                 onComplete = onComplete,
                 favoritesPagerState = favoritesPagerState,
                 navController = navController

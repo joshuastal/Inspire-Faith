@@ -26,18 +26,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.orthodoxquotesapp.quoteapp.AddQuoteButton
+import com.orthodoxquotesapp.quoteapp.composables.buttons.AddQuoteButton
 import com.orthodoxquotesapp.quoteapp.FirebaseService
-import com.orthodoxquotesapp.quoteapp.QuoteCard
+import com.orthodoxquotesapp.quoteapp.composables.quotes_screen.QuoteCard
 import com.orthodoxquotesapp.quoteapp.QuoteService
-import com.orthodoxquotesapp.quoteapp.TooTopButton
+import com.orthodoxquotesapp.quoteapp.composables.buttons.TooTopButton
 import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 import com.orthodoxquotesapp.quoteapp.dataclasses.TabItem
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.LocalQuoteManager
 import kotlinx.coroutines.delay
 
 @Composable
-fun MainScreen(
+fun QuotesScreen(
     onComplete: () -> Unit,
     navController: NavController,
     favoritesPagerState: PagerState,
