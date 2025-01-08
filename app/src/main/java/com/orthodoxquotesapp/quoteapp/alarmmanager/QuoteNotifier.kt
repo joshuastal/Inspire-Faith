@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.orthodoxquotesapp.quoteapp.R
+import java.util.Calendar
 
 class QuoteNotifier(
     private val notificationManager: NotificationManager,
@@ -21,7 +22,7 @@ class QuoteNotifier(
     // Create and show the notification
     @SuppressLint("ObsoleteSdkInt")
     fun showNotification() {
-        Log.d("DailyNotification", "Showing notification at: ${System.currentTimeMillis()}")
+        Log.d("DailyNotification", "Showing notification at: ${Calendar.getInstance().time}")
 
         // Create notification channel for devices with Android Oreo (API 26) or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

@@ -94,12 +94,19 @@ class MainActivity : ComponentActivity() {
     private fun scheduleAlarm(){
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 1)
-            set(Calendar.MINUTE, 48)
+            set(Calendar.HOUR_OF_DAY, 19)
+            set(Calendar.MINUTE, 5)
             set(Calendar.SECOND, 0)
         }
 
+        // If the time has passed for today, schedule it for tomorrow
+        if (calendar.timeInMillis <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        }
+
         Log.d("DailyNotification", "Scheduling alarm for: ${calendar.time}") // Add this log
+
+
 
         val intent = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
