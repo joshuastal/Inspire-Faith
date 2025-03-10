@@ -74,9 +74,12 @@ class MainActivity : ComponentActivity() {
                 // Scaffold allows for persistent BottomNavigationBar
                 Scaffold(
                     bottomBar = {
-                        BottomNavigationBar(navController, bottomNavBarItems, modifier =
-                        Modifier
-                            .clip(RoundedCornerShape(25.dp))
+                        BottomNavigationBar(
+                            navController,
+                            bottomNavBarItems,
+                            startingScreen = "quotes",
+                            modifier = Modifier
+                                    .clip(RoundedCornerShape(25.dp))
                         )
                     }
                 ) { paddingValues ->
@@ -146,7 +149,7 @@ var bottomNavBarItems = listOf(
         unselectedIcon = Icons.Outlined.CalendarMonth
     ),
     BottomNavigationItem(
-      title = "Home",
+        title = "Home",
         selectedIcon = Icons.Filled.House,
         unselectedIcon = Icons.Outlined.House
     ),

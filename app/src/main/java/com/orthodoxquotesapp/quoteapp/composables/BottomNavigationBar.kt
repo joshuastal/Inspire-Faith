@@ -24,14 +24,24 @@ import com.orthodoxquotesapp.quoteapp.dataclasses.BottomNavigationItem
 fun BottomNavigationBar(
     navController: NavController,
     bottomNavBarItems: List<BottomNavigationItem>,
+    startingScreen: String,
     modifier: Modifier = Modifier
 ) {
     // Get the current route from the navController
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     // Track selected item based on the current route
 
-    // Starting screen
-    var selectedIndex by rememberSaveable { mutableIntStateOf(0) } // Default to index 0
+    val initialIndex = when (startingScreen) {
+        "quotes" -> 0
+        "calendar" -> 1
+        "home" -> 2
+        "prayers" -> 3
+        "readings" -> 4
+        else -> 0
+    }
+
+
+    var selectedIndex by rememberSaveable { mutableIntStateOf(initialIndex) } // 2 = Home Screen, 0 = Quotes Screen
 
     // Find the index of the currently active screen
     bottomNavBarItems.forEachIndexed { index, item ->
