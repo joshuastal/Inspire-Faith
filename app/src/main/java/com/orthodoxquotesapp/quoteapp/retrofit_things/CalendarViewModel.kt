@@ -14,7 +14,7 @@ class CalendarViewModel : ViewModel() {
     // Expose the calendar data as a read-only state
     val calendarData: MutableState<List<CalendarDay>> = _calendarData
 
-    fun fetchCalendarData() {
+    fun fetchTodayCalendarData() {
         viewModelScope.launch {
             try {
                 val api = RetrofitInstance.retrofit.create(CalendarApi::class.java)

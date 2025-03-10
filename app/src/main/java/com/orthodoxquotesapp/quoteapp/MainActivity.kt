@@ -23,12 +23,14 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Church
 import androidx.compose.material.icons.filled.FormatQuote
 import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Church
 import androidx.compose.material.icons.outlined.FormatQuote
 import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.House
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -47,22 +49,33 @@ import com.orthodoxquotesapp.quoteapp.alarmmanager.AlarmReceiver
 import com.orthodoxquotesapp.quoteapp.composables.BottomNavigationBar
 import com.orthodoxquotesapp.quoteapp.dataclasses.BottomNavigationItem
 import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
+import com.orthodoxquotesapp.quoteapp.objects.OrthocalForToday
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.FavoritesManager
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.LocalQuoteManager
 import com.orthodoxquotesapp.quoteapp.theme.QuoteAppTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
 class MainActivity : ComponentActivity() {
+
+    private val applicationScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         FavoritesManager.init(this)
 
-        var isQuotesLoaded by mutableStateOf(false)
+        // Load calendar data on app startup
+        applicationScope.launch {
+            OrthocalForToday.loadData()
+        }
 
-        installSplashScreen().setKeepOnScreenCondition { !isQuotesLoaded }
+        var isAppLoaded by mutableStateOf(false)
+
+        installSplashScreen().setKeepOnScreenCondition { !isAppLoaded }
         enableEdgeToEdge()
 
         scheduleAlarm()
@@ -90,7 +103,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Navigation(
                             navController = navController,
-                            onComplete = { isQuotesLoaded = true }
+                            onComplete = { isAppLoaded = true }
                         )
                     }
                 }
@@ -150,8 +163,10 @@ var bottomNavBarItems = listOf(
     ),
     BottomNavigationItem(
         title = "Home",
-        selectedIcon = Icons.Filled.House,
-        unselectedIcon = Icons.Outlined.House
+        selectedIcon = Icons.Filled.Home,
+        selectedIconSize = 24.dp,
+        unselectedIcon = Icons.Outlined.Home,
+        unselectedIconSize = 48.dp
     ),
     BottomNavigationItem(
         title = "Prayers",

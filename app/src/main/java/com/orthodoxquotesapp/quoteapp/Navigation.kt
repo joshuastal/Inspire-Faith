@@ -10,8 +10,9 @@ import com.orthodoxquotesapp.quoteapp.screens.FavoritesScreen
 import com.orthodoxquotesapp.quoteapp.screens.HomeScreen
 import com.orthodoxquotesapp.quoteapp.screens.PrayersScreen
 import com.orthodoxquotesapp.quoteapp.screens.QuotesScreen
-import com.orthodoxquotesapp.quoteapp.screens.ReadingsScreen
-import com.orthodoxquotesapp.quoteapp.screens.SaintsScreen
+import com.orthodoxquotesapp.quoteapp.screens.ReadingsScreen.ReadingsScreen
+import com.orthodoxquotesapp.quoteapp.screens.ReadingsScreen.SaintsScreen
+import com.orthodoxquotesapp.quoteapp.screens.SettingsScreen
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.FavoritesManager
 
 @Composable
@@ -41,8 +42,11 @@ fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
             CalendarScreen()
         }
         composable("home"){
-            HomeScreen(onComplete)
+            HomeScreen(onComplete, navController)
         }
+            composable("settings") {
+                SettingsScreen(navController)
+            }
         composable("prayers"){
             PrayersScreen()
         }
