@@ -26,7 +26,6 @@ fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
             ) {
             QuotesScreen(
                 favoritesPagerState = favoritesPagerState,
-                navController = navController
             )
         }
         composable("favorites") {

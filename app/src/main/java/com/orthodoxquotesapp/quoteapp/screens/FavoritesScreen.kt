@@ -19,7 +19,6 @@ fun FavoritesScreen(pagerState: PagerState) {
 
     Box(modifier = Modifier
         .fillMaxSize()
-        .windowInsetsPadding(WindowInsets.statusBars)
     ) {
         if (favoritesList.isEmpty()) {
             // Show special QuoteCard when there are no favorites

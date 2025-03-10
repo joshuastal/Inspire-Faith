@@ -40,13 +40,10 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun QuotesScreen(
-    navController: NavController,
     favoritesPagerState: PagerState,
 ) {
 
     // UTILITIES
-    val firebaseService = FirebaseService()
-    val quoteService = QuoteService()
     val context = LocalContext.current
     // UTILITIES
 
@@ -59,12 +56,9 @@ fun QuotesScreen(
 
     val isLoading = QuoteData.isLoading.value
 
-
-
-
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val tabItems = listOf(
-        TabItem("Home"),
+        TabItem("All"),
         TabItem("Favorites")
     )
 
