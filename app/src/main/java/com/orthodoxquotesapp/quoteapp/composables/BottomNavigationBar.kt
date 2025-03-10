@@ -29,7 +29,9 @@ fun BottomNavigationBar(
     // Get the current route from the navController
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     // Track selected item based on the current route
-    var selectedIndex by rememberSaveable { mutableIntStateOf(1) } // Default to index 0
+
+    // Starting screen
+    var selectedIndex by rememberSaveable { mutableIntStateOf(0) } // Default to index 0
 
     // Find the index of the currently active screen
     bottomNavBarItems.forEachIndexed { index, item ->

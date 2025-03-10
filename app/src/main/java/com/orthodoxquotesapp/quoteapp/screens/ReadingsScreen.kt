@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.orthodoxquotesapp.quoteapp.composables.readings_screen.ReadingItem
+import com.orthodoxquotesapp.quoteapp.composables.readings_screen.SaintItem
 import com.orthodoxquotesapp.quoteapp.retrofit_things.CalendarViewModel
 
 @Composable
@@ -39,9 +40,15 @@ fun ReadingsScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
+
+            calendarDay.stories.forEachIndexed { _, story ->
+                SaintItem(story)
+            }
             Log.d("Saints", "Stories: ${calendarDay.stories}") // Returns a list of Stories
             Log.d("Saints", "Saints: ${calendarDay.saints}") // Returns a list of Saints who's indexes correspond to the story index
         }
+
+
     }
 }
 

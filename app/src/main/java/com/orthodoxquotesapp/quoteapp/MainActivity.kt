@@ -135,20 +135,15 @@ class MainActivity : ComponentActivity() {
 // Different screens in the app
 var bottomNavBarItems = listOf(
     BottomNavigationItem(
-        title = "Readings",
-        selectedIcon = Icons.AutoMirrored.Filled.MenuBook,
-        unselectedIcon = Icons.Outlined.Book
-    ),
-    BottomNavigationItem(
         title = "Quotes",
         selectedIcon = Icons.Filled.FormatQuote,
         selectedIconSize = 24.dp,
         unselectedIcon = Icons.Outlined.FormatQuote,
     ),
     BottomNavigationItem(
-        title = "Prayers",
-        selectedIcon = Icons.Filled.Church,
-        unselectedIcon = Icons.Outlined.Church,
+        title = "Calendar",
+        selectedIcon = Icons.Filled.CalendarMonth,
+        unselectedIcon = Icons.Outlined.CalendarMonth
     ),
     BottomNavigationItem(
       title = "Home",
@@ -156,14 +151,14 @@ var bottomNavBarItems = listOf(
         unselectedIcon = Icons.Outlined.House
     ),
     BottomNavigationItem(
-        title = "Saints",
-        selectedIcon = Icons.Filled.Group,
-        unselectedIcon = Icons.Outlined.Group
+        title = "Prayers",
+        selectedIcon = Icons.Filled.Church,
+        unselectedIcon = Icons.Outlined.Church,
     ),
     BottomNavigationItem(
-        title = "Calendar",
-        selectedIcon = Icons.Filled.CalendarMonth,
-        unselectedIcon = Icons.Outlined.CalendarMonth
+        title = "Readings",
+        selectedIcon = Icons.AutoMirrored.Filled.MenuBook,
+        unselectedIcon = Icons.Outlined.Book
     )
 )
 
