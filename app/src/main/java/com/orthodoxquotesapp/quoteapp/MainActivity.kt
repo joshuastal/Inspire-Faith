@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
                         BottomNavigationBar(
                             navController,
                             bottomNavBarItems,
-                            startingScreen = "quotes",
+                            startingScreen = "home",
                             modifier = Modifier
                                     .clip(RoundedCornerShape(25.dp))
                         )

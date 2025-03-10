@@ -18,14 +18,13 @@ import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.FavoritesManager
 fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
     val favoritesPagerState = rememberPagerState(pageCount = { FavoritesManager.favoriteQuotes.size })
 
-    NavHost(navController = navController, startDestination = "quotes") {
+    NavHost(navController = navController, startDestination = "home") {
         composable(
             "quotes",
 //            enterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
 //            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
             ) {
             QuotesScreen(
-                onComplete = onComplete,
                 favoritesPagerState = favoritesPagerState,
                 navController = navController
             )
@@ -43,7 +42,7 @@ fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
             CalendarScreen()
         }
         composable("home"){
-            HomeScreen()
+            HomeScreen(onComplete)
         }
         composable("prayers"){
             PrayersScreen()

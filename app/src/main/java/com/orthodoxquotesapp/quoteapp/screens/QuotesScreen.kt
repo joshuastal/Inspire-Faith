@@ -8,6 +8,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -33,12 +34,12 @@ import com.orthodoxquotesapp.quoteapp.services.QuoteService
 import com.orthodoxquotesapp.quoteapp.composables.buttons.TooTopButton
 import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 import com.orthodoxquotesapp.quoteapp.dataclasses.TabItem
+import com.orthodoxquotesapp.quoteapp.objects.QuoteData
 import com.orthodoxquotesapp.quoteapp.sharedpreferencesmanagers.LocalQuoteManager
 import kotlinx.coroutines.delay
 
 @Composable
 fun QuotesScreen(
-    onComplete: () -> Unit,
     navController: NavController,
     favoritesPagerState: PagerState,
 ) {
@@ -51,44 +52,15 @@ fun QuotesScreen(
 
 
     // QUOTES MANAGEMENT
-    val quotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
-    val localQuotes: SnapshotStateList<Quote> = remember { mutableStateListOf() }
-    val allQuotes = remember { mutableStateListOf<Quote>() }
+    val quotes = QuoteData.quotes
+    val localQuotes = QuoteData.localQuotes
+    val allQuotes = QuoteData.allQuotes
     // QUOTES MANAGEMENT
 
+    val isLoading = QuoteData.isLoading.value
 
-    var isLoading by remember { mutableStateOf(true) } // Loading state for Firestore quotes and splashscreen
-    LaunchedEffect(Unit) {
 
-        // Load local quotes from SharedPreferences
-        val savedQuotes = LocalQuoteManager.getSavedQuotes(context)
 
-        // Ensure no duplicates are added
-        savedQuotes.forEach { savedQuote ->
-            if (!localQuotes.contains(savedQuote)) {
-                localQuotes.add(savedQuote)
-            }
-        }
-
-        // Retrieve quotes asynchronously
-        quoteService.retrieveQuotes(quotes, firebaseService)
-
-        // Wait until quotes are loaded
-        while (quotes.isEmpty()) {
-            delay(1) // Check every 1ms if quotes are loaded
-        }
-
-        // Combine and shuffle quotes only once
-        if (allQuotes.isEmpty()) {
-            allQuotes.addAll(localQuotes + quotes)
-            allQuotes.shuffle()
-        }
-
-        isLoading = false // Remote quotes are loaded, so no more loading state
-
-        // Call onComplete after quotes are loaded
-        onComplete()
-    } // Splashscreen conditions
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val tabItems = listOf(
@@ -97,7 +69,7 @@ fun QuotesScreen(
     )
 
     val pagerState = rememberPagerState(pageCount = { tabItems.size })
-    val verticalPagerState = rememberPagerState(pageCount = {allQuotes.size})
+    val verticalPagerState = rememberPagerState(pageCount = { allQuotes.size })
 
     LaunchedEffect(selectedTabIndex){
         pagerState.animateScrollToPage(selectedTabIndex)
@@ -107,75 +79,69 @@ fun QuotesScreen(
     }
 
     MaterialTheme {
-        // Handles the screens and navigation between them
-        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-            when (page) {
-                0 -> {
-                    // VerticalPager for quotes
-                    VerticalPager(
-                        state = verticalPagerState,
-                        userScrollEnabled = true,
-                    ) { verticalPage ->
-                        QuoteCard(quote = allQuotes[verticalPage], modifier = Modifier.fillMaxSize())
+        if (isLoading || allQuotes.isEmpty()) {
+            // Show loading indicator
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        } else {
+            // Your existing UI code - no changes needed here
+            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+                when (page) {
+                    0 -> {
+                        VerticalPager(
+                            state = verticalPagerState,
+                            userScrollEnabled = true,
+                        ) { verticalPage ->
+                            QuoteCard(quote = allQuotes[verticalPage], modifier = Modifier.fillMaxSize())
+                        }
+                    }
+                    1 -> {
+                        FavoritesScreen(
+                            pagerState = favoritesPagerState
+                        )
                     }
                 }
-                1 -> {
-                    // Your Favorites screen placeholder
-                    FavoritesScreen(
-                        pagerState = favoritesPagerState
+            }
+
+            TabRow(
+                selectedTabIndex = selectedTabIndex
+            ) {
+                tabItems.forEachIndexed { index, item ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = { Text(item.title) },
                     )
                 }
             }
-        }
 
-        // Tab navigation bar
-        TabRow(
-            selectedTabIndex = selectedTabIndex
-        ) {
-            tabItems.forEachIndexed { index, item ->
-                Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = { selectedTabIndex = index },
-                    text = { Text(item.title) },
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 10.dp)
+            ) {
+                AddQuoteButton(
+                    { newQuote ->
+                        // Update shared data
+                        QuoteData.localQuotes.add(newQuote)
+                        QuoteData.allQuotes.add(newQuote)
+                        LocalQuoteManager.saveQuotes(context, QuoteData.localQuotes)
+
+                        Log.d("AddButton", "New Quote Added...")
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 8.dp)
+                )
+
+                TooTopButton(
+                    pagerState = if (selectedTabIndex == 0) verticalPagerState else favoritesPagerState,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 8.dp)
                 )
             }
-        }
-
-        // DEBUG BUTTONS //
-        //DebugButtons(allQuotes, localQuotes, context)
-        // DEBUG BUTTONS //
-
-        // TooTop and AddQuote Buttons
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 10.dp)
-        ) {
-            AddQuoteButton(
-                { newQuote ->
-                    // Add the new quote to the quotes list
-                    localQuotes.add(newQuote)
-                    allQuotes.add(newQuote)
-                    LocalQuoteManager.saveQuotes(context, localQuotes)
-
-
-                    Log.d("AddButton", "New Quote Added...")
-                    Log.d("AddButton", "New quotes size: " + quotes.size)
-                    quotes.forEach { quote ->
-                        Log.d("AddButton", "AddButton: ${quote.quote}, Author: ${quote.author}")
-                    }
-
-                }, modifier = Modifier
-                    .align(Alignment.BottomEnd) // Align this button at the bottom right
-                    .padding(end = 8.dp)
-            )
-
-            TooTopButton(
-                pagerState = if (selectedTabIndex == 0) verticalPagerState else favoritesPagerState,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 8.dp)
-            )
         }
     }
 }
