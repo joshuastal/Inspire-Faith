@@ -27,9 +27,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.orthodoxquotesapp.quoteapp.composables.buttons.AddQuoteButton
-import com.orthodoxquotesapp.quoteapp.FirebaseService
+import com.orthodoxquotesapp.quoteapp.services.FirebaseService
 import com.orthodoxquotesapp.quoteapp.composables.quotes_screen.QuoteCard
-import com.orthodoxquotesapp.quoteapp.QuoteService
+import com.orthodoxquotesapp.quoteapp.services.QuoteService
 import com.orthodoxquotesapp.quoteapp.composables.buttons.TooTopButton
 import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
 import com.orthodoxquotesapp.quoteapp.dataclasses.TabItem

@@ -19,11 +19,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Church
 import androidx.compose.material.icons.filled.FormatQuote
 import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.outlined.Book
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Church
 import androidx.compose.material.icons.outlined.FormatQuote
 import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.House
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -140,9 +146,24 @@ var bottomNavBarItems = listOf(
         unselectedIcon = Icons.Outlined.FormatQuote,
     ),
     BottomNavigationItem(
+        title = "Prayers",
+        selectedIcon = Icons.Filled.Church,
+        unselectedIcon = Icons.Outlined.Church,
+    ),
+    BottomNavigationItem(
+      title = "Home",
+        selectedIcon = Icons.Filled.House,
+        unselectedIcon = Icons.Outlined.House
+    ),
+    BottomNavigationItem(
         title = "Saints",
         selectedIcon = Icons.Filled.Group,
         unselectedIcon = Icons.Outlined.Group
+    ),
+    BottomNavigationItem(
+        title = "Calendar",
+        selectedIcon = Icons.Filled.CalendarMonth,
+        unselectedIcon = Icons.Outlined.CalendarMonth
     )
 )
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.orthodoxquotesapp.quoteapp.theme.extendedColors
 import com.orthodoxquotesapp.quoteapp.composables.buttons.FavoriteIconButton
 import com.orthodoxquotesapp.quoteapp.composables.buttons.ShareIconButton
 import com.orthodoxquotesapp.quoteapp.dataclasses.Quote
@@ -33,7 +35,10 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier){
             .background(MaterialTheme.colorScheme.background)
     ) {
         OutlinedCard(
-            border = BorderStroke(2.dp, MaterialTheme.colorScheme.onBackground),
+            border = BorderStroke(1.5f.dp, MaterialTheme.colorScheme.outline),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.extendedColors.cardBackground, // Add a fill color
+            ),
             modifier = Modifier
                 .wrapContentHeight() // Wrap the height to fit the content
                 .fillMaxWidth() // Fill the width but allow height to adjust

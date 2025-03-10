@@ -1,4 +1,4 @@
-package com.orthodoxquotesapp.quoteapp
+package com.orthodoxquotesapp.quoteapp.services
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.firestore.ktx.firestore

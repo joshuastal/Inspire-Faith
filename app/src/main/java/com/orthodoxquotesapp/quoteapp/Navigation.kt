@@ -5,7 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.orthodoxquotesapp.quoteapp.screens.CalendarScreen
 import com.orthodoxquotesapp.quoteapp.screens.FavoritesScreen
+import com.orthodoxquotesapp.quoteapp.screens.HomeScreen
+import com.orthodoxquotesapp.quoteapp.screens.PrayersScreen
 import com.orthodoxquotesapp.quoteapp.screens.QuotesScreen
 import com.orthodoxquotesapp.quoteapp.screens.ReadingsScreen
 import com.orthodoxquotesapp.quoteapp.screens.SaintsScreen
@@ -35,6 +38,15 @@ fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
         }
         composable("saints") {
             SaintsScreen()
+        }
+        composable("calendar"){
+            CalendarScreen()
+        }
+        composable("home"){
+            HomeScreen()
+        }
+        composable("prayers"){
+            PrayersScreen()
         }
     }
 }

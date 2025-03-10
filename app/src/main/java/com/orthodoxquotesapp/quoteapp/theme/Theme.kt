@@ -8,6 +8,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -39,6 +42,7 @@ private val LightColorScheme = lightColorScheme(
     onBackground = Color(0xFF1C1B1F),
     onSurface = Color(0xFF1C1B1F),
     */
+
 )
 
 @Composable
@@ -58,9 +62,38 @@ fun QuoteAppTheme(
         else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    val extendedColors = if (darkTheme) {
+        // DARK MODE CUSTOM COLORS
+        ExtendedColors(cardBackground = Color.DarkGray) // Dark mode card background
+    } else {
+        // LIGHT MODE CUSTOM COLORS
+        ExtendedColors(cardBackground = Color.White) // Light mode card background
+    }
+
+
+    // Provide both the material color scheme and your extended colors
+    CompositionLocalProvider(
+        LocalExtendedColors provides extendedColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
+
+// Define a class to hold your custom colors
+data class ExtendedColors(
+    val cardBackground: Color
+)
+
+// Create a CompositionLocal to provide the extended colors
+val LocalExtendedColors = staticCompositionLocalOf {
+    ExtendedColors(cardBackground = Color.Unspecified)
+}
+
+// Add this at the bottom of your theme.kt file, right after the LocalExtendedColors definition
+val MaterialTheme.extendedColors: ExtendedColors
+    @Composable
+    get() = LocalExtendedColors.current

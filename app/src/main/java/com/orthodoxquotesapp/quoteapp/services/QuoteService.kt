@@ -1,4 +1,4 @@
-package com.orthodoxquotesapp.quoteapp
+package com.orthodoxquotesapp.quoteapp.services
 
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
