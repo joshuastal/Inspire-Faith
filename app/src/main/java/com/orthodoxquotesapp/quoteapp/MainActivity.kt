@@ -151,6 +151,13 @@ class MainActivity : ComponentActivity() {
 // Different screens in the app
 var bottomNavBarItems = listOf(
     BottomNavigationItem(
+        title = "Home",
+        selectedIcon = Icons.Filled.Home,
+        selectedIconSize = 24.dp,
+        unselectedIcon = Icons.Outlined.Home,
+        unselectedIconSize = 48.dp
+    ),
+    BottomNavigationItem(
         title = "Quotes",
         selectedIcon = Icons.Filled.FormatQuote,
         selectedIconSize = 24.dp,
@@ -160,18 +167,6 @@ var bottomNavBarItems = listOf(
         title = "Calendar",
         selectedIcon = Icons.Filled.CalendarMonth,
         unselectedIcon = Icons.Outlined.CalendarMonth
-    ),
-    BottomNavigationItem(
-        title = "Home",
-        selectedIcon = Icons.Filled.Home,
-        selectedIconSize = 24.dp,
-        unselectedIcon = Icons.Outlined.Home,
-        unselectedIconSize = 48.dp
-    ),
-    BottomNavigationItem(
-        title = "Prayers",
-        selectedIcon = Icons.Filled.Church,
-        unselectedIcon = Icons.Outlined.Church,
     ),
     BottomNavigationItem(
         title = "Readings",

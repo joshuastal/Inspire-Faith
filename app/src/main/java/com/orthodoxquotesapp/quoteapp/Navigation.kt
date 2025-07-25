@@ -8,7 +8,6 @@ import androidx.navigation.compose.composable
 import com.orthodoxquotesapp.quoteapp.screens.CalendarScreen
 import com.orthodoxquotesapp.quoteapp.screens.FavoritesScreen
 import com.orthodoxquotesapp.quoteapp.screens.HomeScreen
-import com.orthodoxquotesapp.quoteapp.screens.PrayersScreen
 import com.orthodoxquotesapp.quoteapp.screens.QuotesScreen
 import com.orthodoxquotesapp.quoteapp.screens.ReadingsScreen.ReadingsScreen
 import com.orthodoxquotesapp.quoteapp.screens.ReadingsScreen.SaintsScreen
@@ -44,11 +43,8 @@ fun Navigation(navController: NavHostController, onComplete: () -> Unit) {
         composable("home"){
             HomeScreen(onComplete, navController)
         }
-            composable("settings") {
-                SettingsScreen(navController)
-            }
-        composable("prayers"){
-            PrayersScreen()
+        composable("settings") {
+            SettingsScreen(navController)
         }
     }
 }

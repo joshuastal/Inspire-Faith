@@ -49,8 +49,9 @@ fun QuotesScreen(
 
 
     // QUOTES MANAGEMENT
-    val quotes = QuoteData.quotes
-    val localQuotes = QuoteData.localQuotes
+//    These are going unused when uncommented but I am keeping theme here in case they are really used
+//    val quotes = QuoteData.quotes
+//    val localQuotes = QuoteData.localQuotes
     val allQuotes = QuoteData.allQuotes
     // QUOTES MANAGEMENT
 
